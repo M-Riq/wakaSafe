@@ -1,0 +1,56 @@
+name: "Évolution fonctionnelle"
+description: "Proposer ou détailler une fonctionnalité du MVP"
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Toute évolution doit être rattachée à une exigence du MVP (F1.1 … F9.7).
+        Les éléments **hors MVP** (défis, SafeFlash, Mobile Money, sponsors, iOS, IA…) ne seront pas développés dans cette version.
+  - type: input
+    id: requirement
+    attributes:
+      label: "Exigence(s) concernée(s)"
+      placeholder: "ex. F2.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: app
+    attributes:
+      label: "Application"
+      options:
+        - "Client (apps/mobile — web + Android)"
+        - "Back-office (apps/admin — Next.js)"
+        - "Packages partagés"
+        - "Documentation"
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: "Profil concerné"
+      multiple: true
+      options:
+        - Citoyen
+        - Conducteur d'agence
+        - Autorité
+        - Administrateur
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "Besoin, comportement attendu, règles métier."
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "Critères d'acceptation"
+      placeholder: |
+        - [ ] …
+  - type: input
+    id: phase
+    attributes:
+      label: "Phase de la roadmap"
+      placeholder: "ex. Phase 3"
