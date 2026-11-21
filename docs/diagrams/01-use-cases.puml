@@ -1,0 +1,97 @@
+@startuml WakaSafe_UseCases
+' Use case diagram in strict UML notation (complements 01-use-cases.md).
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor<<optional>> #F3F4F6
+  BorderColor<<optional>> #9CA3AF
+}
+
+actor "Citoyen" as CIT
+actor "Conducteur d'agence" as DRV
+actor "Autorité" as AUT
+actor "Administrateur" as ADM
+actor "Contact de sécurité" as SC
+
+DRV -|> CIT
+AUT -|> CIT
+
+rectangle "Application client (apps/mobile — Expo web + Android)" {
+  package "M1 Comptes et profils" {
+    usecase "S'inscrire et choisir son profil" as UC1
+    usecase "Se connecter / réinitialiser le mot de passe" as UC2
+    usecase "Téléverser ses justificatifs" as UC3
+    usecase "Gérer profil, préférences\net contacts de sécurité" as UC4
+  }
+  package "M2 Signalements" {
+    usecase "Signaler un danger" as UC5
+    usecase "Consulter la carte publique et filtrer" as UC6
+    usecase "Valider / infirmer un signalement" as UC7
+  }
+  package "M3 Hors ligne" {
+    usecase "Confirmer la synchronisation\ndes signalements hors ligne" as UC8
+  }
+  package "M5 Quiz, points, classements" {
+    usecase "Répondre au quiz du jour" as UC9
+    usecase "Consulter score, progression\net classements" as UC10
+  }
+  package "M6 Évaluations" {
+    usecase "Évaluer un conducteur" as UC11
+    usecase "Consulter les classements\nconducteurs et agences" as UC12
+    usecase "Consulter ses statistiques" as UC13
+  }
+  package "M7 Notifications" {
+    usecase "Recevoir et consulter\nses notifications" as UC14
+  }
+  package "M4 / M8 (optionnels)" {
+    usecase "Partager un trajet" as UC15 <<optional>>
+    usecase "Mode conduite simplifié" as UC17 <<optional>>
+  }
+}
+
+rectangle "Page web publique de suivi (emplacement à définir)" {
+  usecase "Suivre un trajet partagé" as UC16 <<optional>>
+}
+
+rectangle "Back-office (apps/admin — Next.js)" {
+  usecase "Se connecter au back-office" as UC20
+  usecase "Valider / refuser un profil" as UC21
+  usecase "Consulter les justificatifs" as UC21b
+  usecase "Modérer signalements et comptes" as UC22
+  usecase "Gérer les quiz" as UC23
+  usecase "Tableau de bord KPI et heatmap" as UC24
+  usecase "Exporter en CSV" as UC25
+  usecase "Vue Autorité : carte, filtres,\nmarquer « pris en charge »" as UC26
+}
+
+CIT --> UC1
+CIT --> UC2
+CIT --> UC3
+CIT --> UC4
+CIT --> UC5
+CIT --> UC6
+CIT --> UC7
+CIT --> UC8
+CIT --> UC9
+CIT --> UC10
+CIT --> UC11
+CIT --> UC12
+CIT --> UC14
+CIT ..> UC15
+CIT ..> UC17
+DRV --> UC13
+AUT --> UC20
+AUT --> UC26
+ADM --> UC20
+ADM --> UC21
+ADM --> UC22
+ADM --> UC23
+ADM --> UC24
+ADM --> UC25
+ADM --> UC26
+SC ..> UC16
+
+UC21 ..> UC21b : <<include>>
+UC25 ..> UC24 : <<extend>>
+UC8 ..> UC5 : <<extend>>
+@enduml

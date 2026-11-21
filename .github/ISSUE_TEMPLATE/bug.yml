@@ -1,0 +1,52 @@
+name: "Anomalie"
+description: "Signaler un bogue dans l'application client ou le back-office"
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: app
+    attributes:
+      label: "Application"
+      options:
+        - "Client — web"
+        - "Client — Android"
+        - "Back-office (admin)"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: "Environnement"
+      placeholder: "ex. Chrome 130 sur Android 10, URL de prévisualisation, modèle du téléphone"
+  - type: dropdown
+    id: role
+    attributes:
+      label: "Compte de démonstration utilisé"
+      options:
+        - Citoyen
+        - Conducteur d'agence
+        - Autorité
+        - Administrateur
+        - "Non connecté"
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Étapes pour reproduire"
+      placeholder: |
+        1. …
+        2. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Résultat attendu"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Résultat obtenu"
+      description: "Ajoutez des captures si possible. N'y faites figurer aucune donnée personnelle réelle."
+    validations:
+      required: true

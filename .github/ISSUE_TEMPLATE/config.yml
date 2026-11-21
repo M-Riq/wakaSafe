@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Question sur le périmètre ou une décision d'architecture"
+    url: https://github.com/M-Riq/wakaSafe/tree/main/docs/adr
+    about: "Consultez d'abord les ADR. Une nouvelle décision fait l'objet d'un ADR proposé au responsable du projet."

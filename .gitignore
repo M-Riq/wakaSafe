@@ -1,0 +1,27 @@
+# Confidential source documents (quote, contact details). Never commit.
+docs/source/*
+!docs/source/README.md
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+.next/
+out/
+web-build/
+.expo/
+coverage/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.log
