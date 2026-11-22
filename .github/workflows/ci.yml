@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck, tests et builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Lint (ESLint + Prettier)
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Tests
+        run: npm test
+      - name: Client web export (apps/mobile)
+        run: npm run build:mobile
+      - name: Client Android bundle (apps/mobile, without native build)
+        run: npm run export:android --workspace @wakasafe/mobile
+
+  docs:
+    name: Documentation et diagrammes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: README diagrams match docs/diagrams
+        run: npm run check:diagrams
+      - name: roadmap.json matches ROADMAP.md
+        run: npm run check:roadmap
+      - name: Render every Mermaid diagram
+        env:
+          # Uses the Chrome preinstalled on the GitHub runner (scripts/puppeteer-config.json).
+          PUPPETEER_SKIP_DOWNLOAD: "true"
+        run: |
+          out="$RUNNER_TEMP/diagrams"
+          mkdir -p "$out"
+          for file in docs/diagrams/*.md; do
+            echo "::group::$file"
+            npx --yes @mermaid-js/mermaid-cli@12.2.0 --quiet \
+              --puppeteerConfigFile scripts/puppeteer-config.json \
+              --input "$file" --output "$out/$(basename "$file")"
+            echo "::endgroup::"
+          done

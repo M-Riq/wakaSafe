@@ -26,23 +26,30 @@ L'app client doit tourner sur **web** (démo par URL) et **Android 8+** avec un 
 | Internationalisation | Dictionnaire typé `fr` (sans bibliothèque lourde au départ)                                          | Ajout d'autres langues possible                                                                          |
 | Qualité              | ESLint, Prettier, `tsc --noEmit`, **Jest** (preset `jest-expo`) + **React Native Testing Library**   | —                                                                                                        |
 
-Organisation des routes Expo Router (proposition, affinée en phase 1) :
+Organisation des routes Expo Router (en place depuis la phase 1 ; les lignes marquées d'une phase arrivent plus tard) :
 
 ```text
 apps/mobile/app/
-  _layout.tsx              # providers (thème, données, requêtes, toasts)
-  index.tsx                # redirection selon la session
+  _layout.tsx              # providers (données, requêtes) + restauration de la session
+  index.tsx                # redirection selon la session (/map ou /welcome)
   project-progress.tsx     # « Avancement du projet » (public)
-  (auth)/                  # login, register, reset-password, pending
-  (app)/                   # garde : session requise et compte non suspendu
+  +not-found.tsx
+  (auth)/                  # garde Stack.Protected : visiteur non connecté
+    welcome.tsx            # accueil
+    demo-access.tsx        # choix d'un compte de démo (temporaire, phase 1)
+    login, register, reset-password   # phase 2
+  (app)/                   # garde Stack.Protected : session requise
+                           # (compte suspendu : lecture seule, voir business-rules.md)
     (tabs)/                # map, report, quiz, leaderboard, profile
-    reports/[id].tsx
-    history.tsx            # mes signalements (dont ceux hors ligne)
-    notifications.tsx
-    ratings/               # évaluer, classements conducteurs et agences
-    driver/                # garde : rôle DRIVER validé (statistiques)
-    profile/               # édition, contacts de sécurité, justificatifs
+    driver.tsx             # garde : capacité canAccessDriverArea (Conducteur validé)
+    reports/[id].tsx       # phase 3
+    history.tsx            # phase 4 : mes signalements (dont ceux hors ligne)
+    notifications.tsx      # phase 7
+    ratings/               # phase 6 : évaluer, classements conducteurs et agences
+    profile/               # phase 2 : édition, contacts de sécurité, justificatifs
 ```
+
+Les gardes s'appuient sur `Stack.Protected` d'Expo Router : une route dont la garde est fausse est inaccessible, même par lien direct. Sur grand écran web, les onglets passent en barre latérale.
 
 Le prompt initial évoquait des groupes `(citizen)`, `(driver)`, `(authority)`. Or le Conducteur et l'Autorité ont **tous les droits du Citoyen**. Un groupe `(app)` commun avec des **sous-routes gardées par rôle** évite de dupliquer les écrans. La vue Autorité se trouve dans `apps/admin` ([ADR-0009](0009-profile-requests-and-authority-access.md)).
 

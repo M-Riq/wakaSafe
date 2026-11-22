@@ -42,7 +42,15 @@ The repository is **public**. `docs/source/` (spec + quote) is git-ignored and m
 - Account status (`ACTIVE`/`SUSPENDED`) is separate from profile requests (`PENDING`/`APPROVED`/`REJECTED`). Pending users keep Citizen rights.
 - Demo limitation: client and admin use separate local mock data. **Do not invent a temporary sync mechanism.**
 - Diagrams in `docs/diagrams/` are the source of truth. The README copies them between `<!-- diagram:... -->` markers. Update both in the same change.
-- Provisional business parameters live in `docs/architecture/business-rules.md` (later `packages/domain/src/config`).
+- Provisional business parameters are documented in `docs/architecture/business-rules.md` and coded once in `BUSINESS_RULES` (`packages/domain/src/config/business-rules.ts`). Keep both in sync.
+- Mock operations planned for a later phase reject with a `NOT_IMPLEMENTED` domain error naming that phase.
+
+## Commands (run at the repository root)
+
+- `npm ci` then `npm run lint` (ESLint with 0 warnings + `prettier --check`), `npm run typecheck`, `npm test`.
+- `npm run build:mobile` (web export) and `npm run export:android -w @wakasafe/mobile` (Android bundle check).
+- `npm run sync:diagrams` after editing `docs/diagrams/`, then `npm run check:diagrams`; `npm run check:roadmap` after editing `ROADMAP.md` or `roadmap.json`.
+- React Native Testing Library 14: `render`, `fireEvent` and `renderRouter` are async and must be awaited.
 
 ## Definition of done (every phase)
 

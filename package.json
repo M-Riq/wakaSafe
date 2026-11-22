@@ -1,0 +1,43 @@
+{
+  "name": "wakasafe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WakaSafe — application citoyenne de sécurité routière (GOSAFE). Monorepo npm workspaces.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": "^24.3.0 || ^26.0.0",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev:mobile": "npm run web --workspace @wakasafe/mobile",
+    "start:mobile": "npm run start --workspace @wakasafe/mobile",
+    "android": "npm run android --workspace @wakasafe/mobile",
+    "build:mobile": "npm run build --workspace @wakasafe/mobile",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "eslint . --max-warnings=0 && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check:diagrams": "node scripts/check-diagrams.mjs",
+    "check:roadmap": "node scripts/check-roadmap.mjs",
+    "sync:diagrams": "node scripts/check-diagrams.mjs --write"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.13",
+    "@babel/plugin-transform-modules-commonjs": "^7.29.14",
+    "@babel/preset-typescript": "^7.29.7",
+    "@types/jest": "^30.0.0",
+    "babel-jest": "^30.5.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~58.0.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "~3.10.1",
+    "globals": "^16.5.0",
+    "jest": "^30.5.2",
+    "prettier": "^3.10.1",
+    "typescript": "~6.0.3"
+  }
+}

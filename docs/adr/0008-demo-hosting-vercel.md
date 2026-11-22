@@ -14,7 +14,7 @@ La démo est montrée au client par URL, avec une **prévisualisation par branch
   - `wakasafe-client` → `apps/mobile`, commande de build `npx expo export --platform web`, dossier de sortie `dist`, réécriture SPA vers `index.html` ;
   - `wakasafe-admin` → `apps/admin`, préréglage Next.js.
 - Option « Ignored Build Step » : ne rebâtir un projet que si son app ou `packages/` a changé.
-- La configuration (`vercel.json` par app) sera ajoutée en phase 1 (client) et en phase 8 (admin). **Le responsable crée les comptes et connecte le dépôt lui-même.** Aucun secret n'est versionné.
+- La configuration (`vercel.json` par app) est versionnée : [`apps/mobile/vercel.json`](../../apps/mobile/vercel.json) depuis la phase 1 ; celle de l'admin arrivera en phase 8. **Le responsable crée les comptes et connecte le dépôt lui-même.** Aucun secret n'est versionné.
 
 ## Conséquences
 

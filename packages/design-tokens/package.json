@@ -1,0 +1,13 @@
+{
+  "name": "@wakasafe/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Design tokens WakaSafe (thème neutre provisoire, en attendant la charte GOSAFE).",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "jest"
+  }
+}

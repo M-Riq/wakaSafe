@@ -22,7 +22,7 @@ Les diagrammes de ce dossier ont tous été compilés avec `@mermaid-js/mermaid-
 npx -y @mermaid-js/mermaid-cli -i diagramme.mmd -o diagramme.svg
 ```
 
-Vous pouvez aussi coller le bloc dans <https://mermaid.live>. À partir de la phase 1, la CI vérifiera automatiquement la syntaxe Mermaid ([CONTRIBUTING](../../CONTRIBUTING.md)).
+Vous pouvez aussi coller le bloc dans <https://mermaid.live>. La CI vérifie automatiquement la syntaxe Mermaid (rendu avec `mermaid-cli`) et la synchronisation avec le README (`npm run check:diagrams`). Voir [CONTRIBUTING](../../CONTRIBUTING.md).
 
 ## Règle de synchronisation
 

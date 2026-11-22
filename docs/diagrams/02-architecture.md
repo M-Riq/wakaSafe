@@ -74,7 +74,9 @@ flowchart TB
 
 Pour la lisibilité, le diagramme omet les flèches des features vers `domain` : les features importent aussi directement les entités et les règles métier (voir le tableau ci-dessous).
 
-## Règles de dépendance (vérifiées par ESLint à partir de la phase 1)
+## Règles de dépendance (vérifiées par ESLint)
+
+La CI fait échouer tout import qui viole ces règles : `no-restricted-imports` interdit `mock-data` hors de la composition root et les frameworks dans les packages ; `import/no-extraneous-dependencies` (types compris) interdit à un package d'importer ce que son `package.json` ne déclare pas. Configuration : [`eslint.config.js`](../../eslint.config.js).
 
 | Couche                         | Peut importer                                    | Ne doit jamais importer                                   |
 | ------------------------------ | ------------------------------------------------ | --------------------------------------------------------- |

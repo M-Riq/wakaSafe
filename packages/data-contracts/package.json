@@ -1,0 +1,15 @@
+{
+  "name": "@wakasafe/data-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interfaces des dépôts de données WakaSafe (ADR-0005). Aucune implémentation.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@wakasafe/domain": "*"
+  }
+}
