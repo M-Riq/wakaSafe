@@ -1420,7 +1420,7 @@ Contraintes d'intégrité et points à adapter selon le SGBD (géolocalisation P
 | Phase | Contenu                                                                                                       | Statut         |
 | ----- | ------------------------------------------------------------------------------------------------------------- | -------------- |
 | 0     | Cadrage, architecture, documentation                                                                          | ✅ Terminée    |
-| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI, page « Avancement du projet » | 🟡 En cours    |
+| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI, page « Avancement du projet » | 🔵 En revue    |
 | 2     | M1 Comptes et profils                                                                                         | ⬜             |
 | 3     | M2 Signalements et carte                                                                                      | ⬜             |
 | 4     | M3 Mode hors ligne                                                                                            | ⬜             |
@@ -1475,7 +1475,7 @@ Variables d'environnement (facultatives) : copier [`.env.example`](.env.example)
 
 La page **« Avancement du projet »** (`/project-progress`) est publique : le client y suit les phases et leur statut, lus depuis [`roadmap.json`](roadmap.json).
 
-**URL de démonstration** : _à venir, dès que le projet Vercel « wakasafe-client » est connecté au dépôt (voir [section 13](#13-déploiement-de-la-démo))_.
+**URL de démonstration** : **<https://wakasafe-client.vercel.app>** (version de `main`, active dès la fusion de la phase 1). Chaque PR reçoit en plus sa propre URL de prévisualisation (voir [section 13](#13-déploiement-de-la-démo)).
 
 **Comptes de démonstration** (fictifs, données mock). En phase 1, on y accède par l'écran **« Choisir un profil de démo »**, sans saisie. La connexion par téléphone et mot de passe arrive en phase 2.
 
@@ -1543,7 +1543,16 @@ Deux projets **Vercel** distincts, reliés à ce dépôt, chacun avec une **URL 
 | `wakasafe-client` | `apps/mobile`  | `cd ../.. && npm ci` | `npm run build` (`expo export --platform web`) | `dist/` (site statique) |
 | `wakasafe-admin`  | `apps/admin`   | à définir en phase 8 | `next build`                                   | préréglage Next.js      |
 
-La configuration du client est versionnée dans [`apps/mobile/vercel.json`](apps/mobile/vercel.json) : installation depuis la racine du monorepo, réécriture de toutes les URL vers `index.html` (liens directs et rafraîchissement), cache long des fichiers statiques. Sur Vercel, il suffit de choisir `apps/mobile` comme dossier racine, sans préréglage de framework (« Other »).
+La configuration du client est versionnée dans [`apps/mobile/vercel.json`](apps/mobile/vercel.json) : installation depuis la racine du monorepo, réécriture de toutes les URL vers `index.html` (liens directs et rafraîchissement), cache long des fichiers statiques.
+
+**Projet `wakasafe-client`** (connecté le 2026-11-24) : URL de production **<https://wakasafe-client.vercel.app>**, qui suit `main`. Réglages indispensables dans Vercel (Settings → Build and Deployment) :
+
+- **Root Directory** : `apps/mobile`. Sans ce réglage, Vercel ignore `apps/mobile/vercel.json` et le build échoue (« No Output Directory named "public" found »).
+- **Include files outside the root directory** : activé (accès à `packages/`).
+- **Framework Preset** : « Other » ; commandes laissées vides (lues dans `vercel.json`).
+- **Node.js Version** : 24.x, comme la CI et `.nvmrc`.
+
+Les URL de prévisualisation des PR sont protégées par Vercel Authentication : seuls les membres du compte Vercel les ouvrent. Le client utilise l'URL de production.
 
 Le responsable du projet crée les comptes et connecte le dépôt. Aucun secret n'est versionné.
 
@@ -1580,7 +1589,6 @@ Les deux apps sont servies sur **deux URL différentes**, et chacune stocke ses 
 | Point                                                                                                           | Échéance          |
 | --------------------------------------------------------------------------------------------------------------- | ----------------- |
 | Choix de la base de données : MySQL ou Supabase/PostgreSQL (le cahier des charges propose PostgreSQL + PostGIS) | Avant la phase 12 |
-| Connexion du projet Vercel « wakasafe-client » au dépôt (URL de démo et prévisualisations de PR)                | Fin de la phase 1 |
 | Activation de M4 (partage de trajet) et M8 (mode conduite)                                                      | Avant la phase 10 |
 | Validation des paramètres métier et des listes (gravité, personnes concernées) par GOSAFE                       | Phases 3 à 6      |
 | Contenus GOSAFE : questions de quiz, charte graphique, logo, CGU, politique de confidentialité                  | Au plus tôt       |

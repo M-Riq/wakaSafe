@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-21",
+  "updatedAt": "2026-11-24",
   "phases": [
     {
       "number": 0,
@@ -17,7 +17,7 @@
       "summary": "Packages partagés, données de démonstration, application Expo web et Android, design system, navigation par rôle, intégration continue et cette page d’avancement.",
       "app": "mobile",
       "requirements": [],
-      "status": "in_progress"
+      "status": "in_review"
     },
     {
       "number": 2,

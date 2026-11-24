@@ -24,7 +24,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Le 
   - mise en page adaptée au grand écran (onglets en barre latérale sur le web desktop).
 - Page « Avancement du projet » alimentée par `roadmap.json`.
 - CI GitHub Actions : lint, typecheck, tests, export web, export du bundle Android, synchronisation des diagrammes du README, cohérence de la roadmap, rendu de chaque diagramme Mermaid.
-- Configuration Vercel de la démo client (`apps/mobile/vercel.json`).
+- Configuration Vercel de la démo client (`apps/mobile/vercel.json`) et projet Vercel `wakasafe-client` connecté : URL de démonstration <https://wakasafe-client.vercel.app> et prévisualisation par PR (réglages documentés dans le README et l'ADR-0008).
 - Scripts `check:diagrams`, `sync:diagrams` et `check:roadmap`, et `start:mobile` (QR code pour Expo Go).
 - README : procédure de test sur un téléphone Android physique avec Expo Go (Wi-Fi, câble USB ou tunnel).
 
