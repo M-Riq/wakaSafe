@@ -3,6 +3,7 @@ export { Badge, type BadgeTone } from './Badge';
 export { Banner } from './Banner';
 export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
+export { ComingSoonView } from './ComingSoonView';
 export { Icon, type IconName } from './Icon';
 export { InfoRow } from './InfoRow';
 export { ProgressBar } from './ProgressBar';

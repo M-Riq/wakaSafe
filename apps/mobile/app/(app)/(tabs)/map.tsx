@@ -1,5 +1,6 @@
-import { ComingSoonScreen } from '@/features/project-progress';
+import { fr } from '@/lib/i18n';
+import { ComingSoonView } from '@/ui';
 
 export default function MapTab() {
-  return <ComingSoonScreen module="map" phase={3} icon="map-outline" />;
+  return <ComingSoonView testID="coming-soon-map" icon="map-outline" {...fr.comingSoon.map} />;
 }

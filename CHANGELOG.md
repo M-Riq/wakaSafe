@@ -19,13 +19,13 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Le 
   - dictionnaire français typé ;
   - `StorageService` (AsyncStorage) et composition root `src/data` (seul point d'import des mocks) ;
   - session (Zustand) restaurée au démarrage, TanStack Query ;
-  - écrans : accueil, « Choisir un profil de démo », 5 onglets (carte, signaler, quiz, classement : « bientôt disponible »), profil, espace Conducteur, page publique « Avancement du projet » ;
+  - écrans : accueil, « Choisir un profil de démo », 5 onglets (carte, signaler, quiz, classement : « Bientôt disponible »), profil, espace Conducteur ;
+  - aucune information interne au projet (phases, avancement, références du cahier des charges) n'est affichée : les fonctionnalités pas encore livrées sont seulement indiquées « Bientôt disponible » ;
   - gardes de routes par rôle : visiteur, session requise, espace Conducteur réservé au Conducteur validé, compte suspendu en lecture seule ;
   - mise en page adaptée au grand écran (onglets en barre latérale sur le web desktop).
-- Page « Avancement du projet » alimentée par `roadmap.json`.
-- CI GitHub Actions : lint, typecheck, tests, export web, export du bundle Android, synchronisation des diagrammes du README, cohérence de la roadmap, rendu de chaque diagramme Mermaid.
+- CI GitHub Actions : lint, typecheck, tests, export web, export du bundle Android, synchronisation des diagrammes du README, rendu de chaque diagramme Mermaid.
 - Configuration Vercel de la démo client (`apps/mobile/vercel.json`) et projet Vercel `wakasafe-client` connecté : URL de démonstration <https://wakasafe-client.vercel.app> et prévisualisation par PR (réglages documentés dans le README et l'ADR-0008).
-- Scripts `check:diagrams`, `sync:diagrams` et `check:roadmap`, et `start:mobile` (QR code pour Expo Go).
+- Scripts `check:diagrams` et `sync:diagrams`, et `start:mobile` (QR code pour Expo Go).
 - README : procédure de test sur un téléphone Android physique avec Expo Go (Wi-Fi, câble USB ou tunnel).
 
 #### Modifié

@@ -22,7 +22,6 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "check:diagrams": "node scripts/check-diagrams.mjs",
-    "check:roadmap": "node scripts/check-roadmap.mjs",
     "sync:diagrams": "node scripts/check-diagrams.mjs --write"
   },
   "devDependencies": {

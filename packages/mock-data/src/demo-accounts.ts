@@ -72,6 +72,6 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     role: 'ADMIN',
     app: 'admin',
     label: 'Administrateur',
-    description: 'Administrateur GOSAFE (back-office uniquement, phase 8).',
+    description: 'Administrateur GOSAFE (interface d’administration uniquement).',
   },
 ];

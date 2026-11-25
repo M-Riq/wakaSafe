@@ -50,13 +50,6 @@ export function WelcomeScreen() {
         onPress={() => router.push('/demo-access')}
         testID="welcome-try-demo"
       />
-      <Button
-        label={fr.welcome.projectProgress}
-        variant="secondary"
-        icon="git-branch-outline"
-        onPress={() => router.push('/project-progress')}
-        testID="welcome-project-progress"
-      />
       <Banner tone="info" title={fr.common.placeholderContent}>
         {fr.welcome.demoNotice}
       </Banner>

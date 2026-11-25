@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fireEvent, renderRouter, screen, testRouter } from 'expo-router/testing-library';
 
 import { createAppData } from '@/data/app-data';
+import { fr } from '@/lib/i18n';
 
 import { useSessionStore } from '../session-store';
 
@@ -94,14 +95,15 @@ describe('client navigation and role guards', () => {
     expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
   });
 
-  it('offers a home button on the progress page opened by URL only', async () => {
+  it('no longer exposes a project progress page', async () => {
     await renderApp('/project-progress');
-    await fireEvent.press(await screen.findByTestId('header-home'));
-    expect(await screen.findByTestId('welcome')).toBeOnTheScreen();
+    expect(await screen.findByTestId('not-found')).toBeOnTheScreen();
+  });
 
-    await fireEvent.press(screen.getByTestId('welcome-project-progress'));
-    expect(await screen.findByTestId('project-progress')).toBeOnTheScreen();
-    expect(screen.queryByTestId('header-home')).toBeNull();
+  it('shows placeholders without any roadmap detail', async () => {
+    await signInAs('user-citizen');
+    expect(screen.getByText(fr.common.comingSoon)).toBeOnTheScreen();
+    expect(screen.queryByText(/phase/i)).toBeNull();
   });
 
   it('shows the read-only banner to a suspended account', async () => {

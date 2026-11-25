@@ -49,7 +49,7 @@ Tant que M4 n'est pas activé, les alertes de trajet (F7.2) et le KPI « trajets
 flowchart TB
     subgraph MOBILE["apps/mobile — Expo (web + Android)"]
         M_UI["<b>src/ui</b><br/>Design system<br/>AppMap :<br/>.web.tsx → Leaflet<br/>.native.tsx → MapLibre"]
-        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)<br/>project-progress"]
+        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)"]
         M_SVC["<b>src/services</b><br/>StorageService<br/>LocationService<br/>MediaService (photo)<br/>NetworkService<br/>NotificationService<br/>SyncService"]
         M_DATA["<b>src/data</b><br/>composition root"]
         M_UI --> M_FEAT

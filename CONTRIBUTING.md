@@ -52,7 +52,7 @@ Une phase n'est terminée que si :
 ## 6. Documentation et diagrammes
 
 - Les diagrammes Mermaid de `docs/diagrams/` sont la **source de vérité**. Le README en contient une copie entre des balises `<!-- diagram:... -->` et `<!-- /diagram -->`. Modifier d'abord `docs/diagrams/`, puis lancer `npm run sync:diagrams` pour recopier les blocs dans le README, dans le même commit. La CI vérifie la synchronisation (`npm run check:diagrams`) et la syntaxe (rendu `mermaid-cli`).
-- `ROADMAP.md` et `roadmap.json` (page « Avancement du projet ») sont mis à jour ensemble ; `npm run check:roadmap` vérifie qu'ils concordent.
+- `ROADMAP.md` sert au suivi interne. L'interface n'affiche jamais de phase ni d'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
 - Toute décision structurante fait l'objet d'un **ADR** dans `docs/adr/`.
 - Toute modification notable est ajoutée au [CHANGELOG](CHANGELOG.md).
 

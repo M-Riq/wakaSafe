@@ -153,13 +153,6 @@ export function ProfileScreen() {
         </Card>
       )}
 
-      <Button
-        label={fr.profile.projectProgress}
-        variant="secondary"
-        icon="git-branch-outline"
-        onPress={() => router.push('/project-progress')}
-      />
-
       <Card>
         <AppText variant="heading">{fr.profile.demoSection}</AppText>
         {demo && (

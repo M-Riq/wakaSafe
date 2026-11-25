@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { useAgency, useCurrentUser, useLatestProfileRequest } from '@/features/accounts';
-import { format, fr } from '@/lib/i18n';
+import { fr } from '@/lib/i18n';
 import { AppText, Badge, Banner, Card, InfoRow, Screen, spacing } from '@/ui';
 
 /** Driver area (F6.4). Route guarded by role: validated drivers only. */
@@ -28,7 +28,7 @@ export function DriverAreaScreen() {
           />
         )}
       </Card>
-      <Banner tone="info" title={format(fr.comingSoon.plannedIn, { phase: 6 })}>
+      <Banner tone="info" title={fr.common.comingSoon}>
         {fr.driver.statsSoon}
       </Banner>
     </Screen>

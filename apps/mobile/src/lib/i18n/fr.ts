@@ -21,6 +21,7 @@ export const fr = {
     errorTitle: 'Une erreur est survenue',
     demoBadge: 'Démo',
     placeholderContent: 'Données de démonstration',
+    comingSoon: 'Bientôt disponible',
   },
   errors: {
     UNAUTHENTICATED: 'Votre session a expiré. Reconnectez-vous.',
@@ -34,7 +35,7 @@ export const fr = {
     DAILY_QUIZ_LIMIT_REACHED: 'Vous avez déjà répondu aux 5 questions du jour.',
     ALREADY_VOTED: 'Vous avez déjà donné votre avis sur ce signalement.',
     ALREADY_RATED: 'Vous avez déjà évalué ce conducteur pour cette période.',
-    NOT_IMPLEMENTED: 'Cette fonctionnalité arrive dans une prochaine phase.',
+    NOT_IMPLEMENTED: 'Cette fonctionnalité sera bientôt disponible.',
     ADMIN_NOT_ALLOWED: 'Les administrateurs utilisent l’interface d’administration.',
     unknown: 'Une erreur inattendue est survenue. Réessayez.',
   } satisfies Record<DomainErrorCode | 'ADMIN_NOT_ALLOWED' | 'unknown', string>,
@@ -73,13 +74,12 @@ export const fr = {
       { icon: 'star-outline', text: 'Évaluez les conducteurs et les agences de voyage.' },
     ],
     tryDemo: 'Découvrir la démo',
-    projectProgress: 'Suivre l’avancement du projet',
     demoNotice: 'Version de démonstration : les données sont fictives et restent sur cet appareil.',
   },
   demoAccess: {
     title: 'Choisir un profil de démo',
     intro:
-      'Chaque profil montre les droits d’un type d’utilisateur. La connexion par numéro de téléphone arrive en phase 2.',
+      'Chaque profil montre les droits d’un type d’utilisateur. La connexion par numéro de téléphone et mot de passe sera bientôt disponible.',
     credentials: 'Identifiants : {phone} · mot de passe «\u00A0{password}\u00A0»',
     signIn: 'Se connecter : {label}',
     signingIn: 'Connexion…',
@@ -92,9 +92,6 @@ export const fr = {
     profile: 'Profil',
   },
   comingSoon: {
-    plannedIn: 'Prévu en phase {phase}',
-    requirements: 'Exigences du cahier des charges : {list}',
-    seeProgress: 'Voir l’avancement du projet',
     map: {
       title: 'Carte des dangers',
       description:
@@ -103,7 +100,7 @@ export const fr = {
     report: {
       title: 'Signaler un danger',
       description:
-        'Catégorie, gravité, personnes concernées, photo facultative et position GPS automatique. Fonctionne aussi hors ligne (phase 4).',
+        'Catégorie, gravité, personnes concernées, photo facultative et position GPS automatique. Fonctionne aussi sans réseau.',
     },
     quiz: {
       title: 'Quiz du jour',
@@ -113,7 +110,7 @@ export const fr = {
     leaderboard: {
       title: 'Classements',
       description:
-        'Points gagnés, classements mensuel et annuel, puis classement des conducteurs et des agences (phase 6).',
+        'Points gagnés, classements mensuel et annuel, et classement des conducteurs et des agences.',
     },
   },
   profile: {
@@ -134,11 +131,11 @@ export const fr = {
       'Votre compte est en lecture seule jusqu’à sa réactivation par un administrateur.',
     authorityTitle: 'Profil Autorité',
     authorityBody:
-      'Dans cette application, vous avez les droits du Citoyen. La vue Autorité (carte des signalements et statut «\u00A0pris en charge\u00A0») se trouve dans l’interface d’administration (phase 9).',
+      'Dans cette application, vous avez les droits du Citoyen. La vue Autorité (carte des signalements et statut «\u00A0pris en charge\u00A0») se trouve dans l’interface d’administration.',
     driverArea: 'Espace conducteur',
     documents: 'Justificatifs transmis',
     safetyContacts: 'Contacts de sécurité',
-    noSafetyContact: 'Aucun contact de sécurité. L’ajout arrive en phase 2.',
+    noSafetyContact: 'Aucun contact de sécurité. L’ajout sera bientôt disponible.',
     preferences: 'Préférences',
     nearbyAlerts: 'Alertes de danger à proximité',
     nearbyRadius: 'Rayon : {km} km',
@@ -147,44 +144,18 @@ export const fr = {
     alertsDisabled: 'Désactivées',
     remindersEnabled: 'Activés',
     remindersDisabled: 'Désactivés',
-    editingSoon: 'La modification du profil arrive en phase 2.',
+    editingSoon: 'La modification du profil sera bientôt disponible.',
     demoSection: 'Démonstration',
     resetDemo: 'Réinitialiser les données de démo',
     resetDemoHint: 'Restaure les données de départ et vous déconnecte.',
     signOut: 'Se déconnecter',
-    projectProgress: 'Avancement du projet',
   },
   driver: {
     title: 'Espace conducteur',
     agency: 'Agence',
     intro: 'Cet espace est réservé aux conducteurs d’agence validés.',
     statsSoon:
-      'Vos statistiques (moyenne par critère, nombre d’évaluations, classement) arrivent en phase 6.',
-  },
-  progress: {
-    title: 'Avancement du projet',
-    subtitle: 'Suivez les étapes de construction du MVP WakaSafe.',
-    updatedAt: 'Mis à jour le {date}',
-    overall: {
-      one: '{done} phase terminée sur {total}',
-      other: '{done} phases terminées sur {total}',
-    },
-    current: 'Phase en cours',
-    phase: 'Phase {number}',
-    requirements: 'Exigences : {list}',
-    status: {
-      done: 'Terminée',
-      in_review: 'En revue',
-      in_progress: 'En cours',
-      planned: 'À venir',
-      optional: 'Optionnelle',
-    },
-    app: {
-      docs: 'Documentation',
-      mobile: 'Application client',
-      admin: 'Back-office',
-      both: 'Client et back-office',
-    },
+      'Vous pourrez consulter ici vos statistiques : moyenne par critère, nombre d’évaluations et classement.',
   },
   notFound: {
     title: 'Page introuvable',

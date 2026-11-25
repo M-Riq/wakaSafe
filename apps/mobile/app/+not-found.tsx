@@ -6,7 +6,7 @@ import { AppText, Button, Card, Screen } from '@/ui';
 export default function NotFound() {
   const router = useRouter();
   return (
-    <Screen>
+    <Screen testID="not-found">
       <Card>
         <AppText variant="title">{fr.notFound.title}</AppText>
         <AppText tone="muted">{fr.notFound.body}</AppText>

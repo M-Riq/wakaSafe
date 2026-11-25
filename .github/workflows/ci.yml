@@ -46,8 +46,6 @@ jobs:
           node-version-file: .nvmrc
       - name: README diagrams match docs/diagrams
         run: npm run check:diagrams
-      - name: roadmap.json matches ROADMAP.md
-        run: npm run check:roadmap
       - name: Render every Mermaid diagram
         env:
           # Uses the Chrome preinstalled on the GitHub runner (scripts/puppeteer-config.json).

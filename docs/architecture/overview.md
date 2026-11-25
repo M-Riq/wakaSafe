@@ -23,7 +23,7 @@ wakasafe/
 │   │   ├── vercel.json            # hébergement de la démo web (ADR-0008)
 │   │   └── src/
 │   │       ├── data/              # composition root (seul import de mock-data)
-│   │       ├── features/          # accounts, project-progress, ratings (phase 1) ;
+│   │       ├── features/          # accounts, ratings (phase 1) ;
 │   │       │                      # reports, offline, quiz, points, notifications (phases 3 à 7)
 │   │       ├── services/          # storage (phase 1) ; location, media, network,
 │   │       │                      # notification, sync (phases 3 à 7)
@@ -42,8 +42,7 @@ wakasafe/
 │   ├── data-contracts/            # interfaces des dépôts et services
 │   ├── mock-data/                 # implémentations mock + jeux de démonstration
 │   └── design-tokens/             # couleurs, typographie, espacements, rayons
-├── scripts/                       # check-diagrams.mjs, check-roadmap.mjs (contrôles CI)
-├── roadmap.json                   # données de la page « Avancement du projet »
+├── scripts/                       # check-diagrams.mjs (contrôle CI des diagrammes)
 ├── README.md  ROADMAP.md  CHANGELOG.md  CONTRIBUTING.md
 ├── .env.example                   # variables publiques uniquement
 ├── eslint.config.js  .prettierrc.json  tsconfig.base.json  jest.packages.config.js

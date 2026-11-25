@@ -113,7 +113,7 @@ flowchart TB
     subgraph MOBILE["apps/mobile — Expo + React Native + Expo Router"]
         direction TB
         M_UI["UI : écrans (app/), design system, AppMap"]
-        M_FEAT["features/ : accounts, reports, offline, quiz,<br/>ratings, notifications, project-progress"]
+        M_FEAT["features/ : accounts, reports, offline,<br/>quiz, ratings, notifications"]
         M_SVC["services/ : storage, location, camera,<br/>network, notification, sync"]
         M_ROOT["Composition root (src/data/)<br/>choix de l'implémentation des dépôts"]
         M_UI --> M_FEAT
@@ -312,7 +312,7 @@ flowchart LR
 flowchart TB
     subgraph MOBILE["apps/mobile — Expo (web + Android)"]
         M_UI["<b>src/ui</b><br/>Design system<br/>AppMap :<br/>.web.tsx → Leaflet<br/>.native.tsx → MapLibre"]
-        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)<br/>project-progress"]
+        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)"]
         M_SVC["<b>src/services</b><br/>StorageService<br/>LocationService<br/>MediaService (photo)<br/>NetworkService<br/>NotificationService<br/>SyncService"]
         M_DATA["<b>src/data</b><br/>composition root"]
         M_UI --> M_FEAT
@@ -1147,8 +1147,7 @@ wakasafe/
 │   ├── data-contracts/ # interfaces des dépôts
 │   ├── mock-data/      # implémentations mock + jeux de démonstration
 │   └── design-tokens/  # couleurs, typographie, espacements
-├── scripts/            # contrôles CI : diagrammes du README, roadmap
-├── roadmap.json        # données de la page « Avancement du projet »
+├── scripts/            # contrôle CI : diagrammes du README
 ├── README.md  ROADMAP.md  CHANGELOG.md  CONTRIBUTING.md
 └── .env.example        # variables publiques (aucun secret)
 ```
@@ -1417,22 +1416,22 @@ Contraintes d'intégrité et points à adapter selon le SGBD (géolocalisation P
 
 ## 8. Roadmap
 
-| Phase | Contenu                                                                                                       | Statut         |
-| ----- | ------------------------------------------------------------------------------------------------------------- | -------------- |
-| 0     | Cadrage, architecture, documentation                                                                          | ✅ Terminée    |
-| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI, page « Avancement du projet » | 🔵 En revue    |
-| 2     | M1 Comptes et profils                                                                                         | ⬜             |
-| 3     | M2 Signalements et carte                                                                                      | ⬜             |
-| 4     | M3 Mode hors ligne                                                                                            | ⬜             |
-| 5     | M5 Quiz, points, classements                                                                                  | ⬜             |
-| 6     | M6 Évaluation des conducteurs                                                                                 | ⬜             |
-| 7     | M7 Notifications                                                                                              | ⬜             |
-| 8     | Back-office : fondations, validation des profils, modération                                                  | ⬜             |
-| 9     | Back-office : quiz, KPI et heatmap, export CSV, vue Autorité                                                  | ⬜             |
-| 10    | M4 Partage de trajet + M8 Mode conduite                                                                       | ⏸️ Optionnelle |
-| 11    | Build Android (APK de test)                                                                                   | ⬜             |
-| 12    | Backend et base de données réels                                                                              | ⬜             |
-| 13    | Sécurité, qualité, préparation de la publication                                                              | ⬜             |
+| Phase | Contenu                                                                        | Statut         |
+| ----- | ------------------------------------------------------------------------------ | -------------- |
+| 0     | Cadrage, architecture, documentation                                           | ✅ Terminée    |
+| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI | 🔵 En revue    |
+| 2     | M1 Comptes et profils                                                          | ⬜             |
+| 3     | M2 Signalements et carte                                                       | ⬜             |
+| 4     | M3 Mode hors ligne                                                             | ⬜             |
+| 5     | M5 Quiz, points, classements                                                   | ⬜             |
+| 6     | M6 Évaluation des conducteurs                                                  | ⬜             |
+| 7     | M7 Notifications                                                               | ⬜             |
+| 8     | Back-office : fondations, validation des profils, modération                   | ⬜             |
+| 9     | Back-office : quiz, KPI et heatmap, export CSV, vue Autorité                   | ⬜             |
+| 10    | M4 Partage de trajet + M8 Mode conduite                                        | ⏸️ Optionnelle |
+| 11    | Build Android (APK de test)                                                    | ⬜             |
+| 12    | Backend et base de données réels                                               | ⬜             |
+| 13    | Sécurité, qualité, préparation de la publication                               | ⬜             |
 
 Détail, branches et définition de terminé : [ROADMAP.md](ROADMAP.md). Rattachement des exigences : [matrice de traçabilité](docs/architecture/traceability.md).
 
@@ -1448,7 +1447,7 @@ Détails : [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 10. Application client (`apps/mobile`)
 
-> Phase 1 : coquille de l'app (accueil, choix d'un profil de démo, onglets, profil, espace Conducteur, page « Avancement du projet »). Les écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)).
+> Phase 1 : coquille de l'app (accueil, choix d'un profil de démo, onglets, profil, espace Conducteur). Les écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)). L'app n'affiche aucune information sur les phases ni sur l'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
 
 **Prérequis** : Node.js 24 LTS (fixé dans `.nvmrc` ; Node 26 fonctionne aussi), npm 10 ou plus. Pour Android : un téléphone Android 8+ avec Expo Go, ou un émulateur (Android Studio).
 
@@ -1472,8 +1471,6 @@ npm run export:android -w @wakasafe/mobile   # vérifie que le bundle Android se
 Sous Windows, autoriser Node.js dans le pare-feu (réseau **privé**) quand Windows le demande au premier lancement.
 
 Variables d'environnement (facultatives) : copier [`.env.example`](.env.example) dans `apps/mobile/.env.local`. Détail : [docs/architecture/overview.md](docs/architecture/overview.md#variables-denvironnement).
-
-La page **« Avancement du projet »** (`/project-progress`) est publique : le client y suit les phases et leur statut, lus depuis [`roadmap.json`](roadmap.json).
 
 **URL de démonstration** : **<https://wakasafe-client.vercel.app>** (version de `main`, active dès la fusion de la phase 1). Chaque PR reçoit en plus sa propre URL de prévisualisation (voir [section 13](#13-déploiement-de-la-démo)).
 
@@ -1522,13 +1519,12 @@ npm test                 # Jest dans chaque workspace (Testing Library pour les 
 npm run build            # builds de tous les workspaces (aujourd'hui : export web du client)
 npm run check:diagrams   # les diagrammes du README sont identiques à docs/diagrams/
 npm run sync:diagrams    # recopie les diagrammes de docs/diagrams/ dans le README
-npm run check:roadmap    # roadmap.json et ROADMAP.md concordent
 ```
 
 La **CI GitHub Actions** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) s'exécute sur chaque PR et sur `main` :
 
 - **Qualité** : installation propre (`npm ci`), lint, typecheck, tests, export web du client et export du bundle Android ;
-- **Documentation** : `check:diagrams`, `check:roadmap`, puis rendu de chaque diagramme Mermaid avec `mermaid-cli` (un diagramme invalide fait échouer la CI).
+- **Documentation** : `check:diagrams`, puis rendu de chaque diagramme Mermaid avec `mermaid-cli` (un diagramme invalide fait échouer la CI).
 
 Le build Next.js du back-office rejoindra la CI en phase 8.
 

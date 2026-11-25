@@ -32,7 +32,6 @@ Organisation des routes Expo Router (en place depuis la phase 1 ; les lignes mar
 apps/mobile/app/
   _layout.tsx              # providers (données, requêtes) + restauration de la session
   index.tsx                # redirection selon la session (/map ou /welcome)
-  project-progress.tsx     # « Avancement du projet » (public)
   +not-found.tsx
   (auth)/                  # garde Stack.Protected : visiteur non connecté
     welcome.tsx            # accueil

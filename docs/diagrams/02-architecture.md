@@ -13,7 +13,7 @@ flowchart TB
     subgraph MOBILE["apps/mobile — Expo + React Native + Expo Router"]
         direction TB
         M_UI["UI : écrans (app/), design system, AppMap"]
-        M_FEAT["features/ : accounts, reports, offline, quiz,<br/>ratings, notifications, project-progress"]
+        M_FEAT["features/ : accounts, reports, offline,<br/>quiz, ratings, notifications"]
         M_SVC["services/ : storage, location, camera,<br/>network, notification, sync"]
         M_ROOT["Composition root (src/data/)<br/>choix de l'implémentation des dépôts"]
         M_UI --> M_FEAT

@@ -1,5 +1,6 @@
-import { ComingSoonScreen } from '@/features/project-progress';
+import { fr } from '@/lib/i18n';
+import { ComingSoonView } from '@/ui';
 
 export default function QuizTab() {
-  return <ComingSoonScreen module="quiz" phase={5} icon="school-outline" />;
+  return <ComingSoonView testID="coming-soon-quiz" icon="school-outline" {...fr.comingSoon.quiz} />;
 }
