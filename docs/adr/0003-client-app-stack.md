@@ -1,6 +1,6 @@
 # ADR-0003 : Stack de l'application client (`apps/mobile`)
 
-- Statut : **Proposé**
+- Statut : **Accepté**
 - Date : 2026-11-18
 - Décideur : Mbassi Rick Bryan (responsable du projet)
 
@@ -31,21 +31,24 @@ Organisation des routes Expo Router (en place depuis la phase 1 ; les lignes mar
 ```text
 apps/mobile/app/
   _layout.tsx              # providers (données, requêtes) + restauration de la session
-  index.tsx                # redirection selon la session (/map ou /welcome)
+  index.tsx                # redirection selon la session (/welcome, /map ou l'écran d'arrivée)
+  terms.tsx                # conditions d'utilisation, hors gardes (lien depuis l'inscription)
   +not-found.tsx
   (auth)/                  # garde Stack.Protected : visiteur non connecté
     welcome.tsx            # accueil
-    demo-access.tsx        # choix d'un compte de démo (temporaire, phase 1)
-    login, register, reset-password   # phase 2
+    login.tsx              # connexion téléphone + mot de passe
+    register.tsx           # inscription en 2 ou 3 étapes
+    reset-password.tsx     # réinitialisation par code
+    demo-access.tsx        # raccourci de démo : connexion en un geste
   (app)/                   # garde Stack.Protected : session requise
                            # (compte suspendu : lecture seule, voir business-rules.md)
     (tabs)/                # map, report, quiz, leaderboard, profile
     driver.tsx             # garde : capacité canAccessDriverArea (Conducteur validé)
+    profile/               # edit, preferences, safety-contacts, request, documents
     reports/[id].tsx       # phase 3
     history.tsx            # phase 4 : mes signalements (dont ceux hors ligne)
     notifications.tsx      # phase 7
     ratings/               # phase 6 : évaluer, classements conducteurs et agences
-    profile/               # phase 2 : édition, contacts de sécurité, justificatifs
 ```
 
 Les gardes s'appuient sur `Stack.Protected` d'Expo Router : une route dont la garde est fausse est inaccessible, même par lien direct. Sur grand écran web, les onglets passent en barre latérale.

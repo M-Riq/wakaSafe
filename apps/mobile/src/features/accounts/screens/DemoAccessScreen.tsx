@@ -16,8 +16,8 @@ const ROLE_TONE: Record<DemoAccountInfo['role'], BadgeTone> = {
 };
 
 /**
- * Temporary demo entry point (phase 1): one-tap sign-in with the demo accounts.
- * The phone + password form (F1.2) replaces it as the main entry in phase 2.
+ * Demo shortcut: one-tap sign-in with the seeded accounts of each role. The phone + password
+ * form (F1.2) is the main entry; this screen is a secondary link on the welcome screen.
  */
 export function DemoAccessScreen() {
   const demo = useDemoTools();

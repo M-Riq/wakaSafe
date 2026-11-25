@@ -47,7 +47,7 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     role: 'CITIZEN',
     app: 'client',
     label: 'Conducteur en attente',
-    description: 'Samuel Fotso, Bafoussam. Demande Conducteur en attente : droits Citoyen.',
+    description: 'Samuel Fotso, Bafoussam. Demande Conducteur en attente\u00A0: droits Citoyen.',
   },
   {
     userId: DEMO_USER_IDS.authority,
@@ -56,7 +56,7 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     app: 'client',
     label: 'Autorité',
     description:
-      'Brigitte Ngo Mbock, Yaoundé. Droits Citoyen dans l’app ; vue Autorité dans l’admin.',
+      'Brigitte Ngo Mbock, Yaoundé. Droits Citoyen dans l’app\u00A0; vue Autorité dans l’admin.',
   },
   {
     userId: DEMO_USER_IDS.suspended,
@@ -64,7 +64,7 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     role: 'CITIZEN',
     app: 'client',
     label: 'Compte suspendu',
-    description: 'Hervé Nkoulou, Yaoundé. Suspension temporaire : lecture seule.',
+    description: 'Hervé Nkoulou, Yaoundé. Suspension temporaire\u00A0: lecture seule.',
   },
   {
     userId: DEMO_USER_IDS.admin,

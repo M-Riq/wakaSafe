@@ -12,7 +12,7 @@ interface InfoRowProps {
 
 export function InfoRow({ label, value, icon }: InfoRowProps) {
   return (
-    <View style={styles.row} accessible accessibilityLabel={`${label} : ${value}`}>
+    <View style={styles.row} accessible accessibilityLabel={`${label}\u00A0: ${value}`}>
       {icon && <Icon name={icon} color={colors.textMuted} />}
       <View style={styles.text}>
         <AppText variant="caption" tone="muted">

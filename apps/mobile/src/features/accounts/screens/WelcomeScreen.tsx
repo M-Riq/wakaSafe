@@ -44,12 +44,28 @@ export function WelcomeScreen() {
           ))}
         </View>
       </Card>
-      <Button
-        label={fr.welcome.tryDemo}
-        icon="log-in-outline"
-        onPress={() => router.push('/demo-access')}
-        testID="welcome-try-demo"
-      />
+      <View style={styles.actions}>
+        <Button
+          label={fr.welcome.signIn}
+          icon="log-in-outline"
+          onPress={() => router.push('/login')}
+          testID="welcome-sign-in"
+        />
+        <Button
+          label={fr.welcome.register}
+          variant="secondary"
+          icon="person-add-outline"
+          onPress={() => router.push('/register')}
+          testID="welcome-register"
+        />
+        <Button
+          label={fr.welcome.tryDemo}
+          variant="ghost"
+          icon="people-outline"
+          onPress={() => router.push('/demo-access')}
+          testID="welcome-try-demo"
+        />
+      </View>
       <Banner tone="info" title={fr.common.placeholderContent}>
         {fr.welcome.demoNotice}
       </Banner>
@@ -72,4 +88,5 @@ const styles = StyleSheet.create({
   features: { gap: spacing.md },
   feature: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   featureText: { flex: 1 },
+  actions: { gap: spacing.sm },
 });

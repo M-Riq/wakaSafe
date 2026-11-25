@@ -22,12 +22,13 @@ export type ProfileRequestStatus = z.infer<typeof ProfileRequestStatusSchema>;
 export const DocumentTypeSchema = z.enum(['ID_CARD', 'DRIVING_LICENSE', 'FUNCTION_PROOF']);
 export type DocumentType = z.infer<typeof DocumentTypeSchema>;
 
-const NameSchema = z.string().trim().min(1).max(60);
+/** First or last name. Issue messages are validation codes (see validation.ts). */
+export const PersonNameSchema = z.string().trim().min(1, 'REQUIRED').max(60, 'TEXT_TOO_LONG');
 
 export const UserSchema = z.object({
   id: IdSchema,
-  firstName: NameSchema,
-  lastName: NameSchema,
+  firstName: PersonNameSchema,
+  lastName: PersonNameSchema,
   phone: PhoneSchema,
   photoUrl: z.string().min(1).nullable(),
   role: RoleSchema,

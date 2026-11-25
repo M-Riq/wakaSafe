@@ -5,6 +5,29 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Le 
 
 ## [Non publié]
 
+### Phase 2 : comptes et profils (M1)
+
+#### Ajouté
+
+- `@wakasafe/domain` : schémas de saisie des comptes (inscription, connexion, réinitialisation, profil, préférences, contact de sécurité, demande de profil, justificatif), règle du mot de passe, code de réinitialisation, plafond de 5 contacts de sécurité (`BUSINESS_RULES.accounts`), capacité `canRequestProfile`, erreur `INVALID_RESET_CODE` et erreurs par champ.
+- `@wakasafe/mock-data` : inscription, réinitialisation du mot de passe par code (affiché à l'écran en démo), modification du profil et des préférences, ajout, modification et suppression des contacts de sécurité, dépôt d'une demande Conducteur ou Autorité et de ses justificatifs. Schéma de stockage local en version 2.
+- `apps/mobile` :
+  - écrans de connexion (téléphone et mot de passe), d'inscription en étapes (identité et photo facultative, profil souhaité, justificatifs facultatifs), de mot de passe oublié et de conditions d'utilisation (texte provisoire) ;
+  - écrans du profil : modification (le téléphone n'est pas modifiable), préférences, contacts de sécurité, demande de profil Conducteur ou Autorité (y compris après un refus) et justificatifs ;
+  - `MediaService` : choix d'une photo (appareil photo ou galerie sur Android, sélecteur de fichier sur le web) puis compression, avec `expo-image-picker` et `expo-image-manipulator` ;
+  - composants de formulaire (champ texte, choix, case à cocher, interrupteur, avatar) ;
+  - tests des parcours : connexion, inscription Citoyen et Conducteur, réinitialisation, profil, contacts, préférences, demande et justificatifs.
+
+#### Modifié
+
+- Accueil : boutons « Se connecter » et « Créer un compte » ; le choix d'un profil de démo devient un lien secondaire.
+- Profil : avatar, bandeau en cas de refus, état de la demande et des justificatifs, accès aux écrans de gestion. Le message « Bientôt disponible » de la modification du profil disparaît.
+- Web : le bouton retour de l'en-tête a un libellé accessible en français ; l'état des cases à cocher, des choix et des boutons en cours de chargement est annoncé aux lecteurs d'écran (attributs `aria-*`, que `react-native-web` lit à la place de `accessibilityState`).
+- Textes : espace insécable avant `:`, `;`, `?` et `!` dans l'interface (vérifié par un test) et dans les données de démonstration des comptes.
+- ADR 0003 à 0006 passés au statut « Accepté » ; ADR-0003 : routes réelles des comptes.
+- Diagramme de séquence « Inscription et demande de profil » aligné sur l'implémentation.
+- Règles métier : mot de passe, code de réinitialisation, contacts de sécurité, suspension sans demande de profil.
+
 ### Phase 1 : fondations de l'app client
 
 #### Ajouté

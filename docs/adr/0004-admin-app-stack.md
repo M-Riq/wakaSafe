@@ -1,6 +1,6 @@
 # ADR-0004 : Stack du back-office (`apps/admin`)
 
-- Statut : **Proposé**
+- Statut : **Accepté**
 - Date : 2026-11-18
 - Décideur : Mbassi Rick Bryan (responsable du projet)
 

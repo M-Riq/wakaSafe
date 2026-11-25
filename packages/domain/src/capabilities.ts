@@ -1,3 +1,4 @@
+import { BUSINESS_RULES } from './config/business-rules';
 import type { ProfileRequest, RequestableRole, User } from './entities/accounts';
 
 /** A suspension is effective until `suspendedUntil` (null = until manual reactivation). */
@@ -21,6 +22,8 @@ export interface ClientCapabilities {
   isAuthority: boolean;
   /** Pending users keep the Citizen rights until a decision is made (F1.3). */
   pendingRequestRole: RequestableRole | null;
+  /** A Citizen may ask for the Driver or Authority profile, one pending request at a time (F1.3). */
+  canRequestProfile: boolean;
 }
 
 export interface CapabilitiesInput {
@@ -38,6 +41,10 @@ export function getClientCapabilities({
   const canUseClientApp = user.role !== 'ADMIN';
   const isReadOnly = isAccountSuspended(user, now);
   const canAct = canUseClientApp && !isReadOnly;
+  const status = latestRequest?.status;
+  const newRequestAllowed =
+    status !== 'PENDING' &&
+    (status !== 'REJECTED' || BUSINESS_RULES.profileRequests.allowNewRequestAfterRejection);
   return {
     canUseClientApp,
     isReadOnly,
@@ -48,5 +55,6 @@ export function getClientCapabilities({
     canAccessDriverArea: canUseClientApp && user.role === 'DRIVER',
     isAuthority: user.role === 'AUTHORITY',
     pendingRequestRole: latestRequest?.status === 'PENDING' ? latestRequest.requestedRole : null,
+    canRequestProfile: canAct && user.role === 'CITIZEN' && newRequestAllowed,
   };
 }

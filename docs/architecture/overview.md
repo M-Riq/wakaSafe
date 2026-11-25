@@ -25,8 +25,8 @@ wakasafe/
 │   │       ├── data/              # composition root (seul import de mock-data)
 │   │       ├── features/          # accounts, ratings (phase 1) ;
 │   │       │                      # reports, offline, quiz, points, notifications (phases 3 à 7)
-│   │       ├── services/          # storage (phase 1) ; location, media, network,
-│   │       │                      # notification, sync (phases 3 à 7)
+│   │       ├── services/          # storage (phase 1), media (phase 2) ; location,
+│   │       │                      # network, notification, sync (phases 3 à 7)
 │   │       ├── ui/                # design system RN ; AppMap .web / .native (phase 3)
 │   │       └── lib/               # i18n fr, config, erreurs, client de requêtes
 │   └── admin/                     # Next.js App Router — web

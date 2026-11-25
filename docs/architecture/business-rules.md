@@ -4,6 +4,9 @@ Le cahier des charges fixe les **règles** mais pas toujours les **valeurs**. Le
 
 | Paramètre                                   | Exigence   | Valeur proposée                                                                                                            | Statut       |
 | ------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Règle du mot de passe                       | F1.1, F1.2 | Au moins 8 caractères, dont au moins une lettre et un chiffre                                                              | À valider    |
+| Code de réinitialisation du mot de passe    | F1.2       | 6 chiffres envoyés par SMS, valable 10 minutes, invalidé après 5 essais erronés (affiché à l'écran en démo)                | À valider    |
+| Nombre maximal de contacts de sécurité      | F1.5       | 5                                                                                                                          | À valider    |
 | Niveaux de gravité                          | F2.2       | Faible, Moyenne, Élevée, Critique                                                                                          | À valider    |
 | Catégories de personnes concernées          | F2.2       | Piétons, Motocyclistes (moto-taxis), Automobilistes, Usagers des transports en commun, Enfants et élèves, Tous les usagers | À valider    |
 | Seuil de validation d'un signalement        | F2.4       | 3 confirmations                                                                                                            | À valider    |
@@ -13,7 +16,7 @@ Le cahier des charges fixe les **règles** mais pas toujours les **valeurs**. Le
 | Quota de signalements                       | F2.6       | 10 par 24 h glissantes                                                                                                     | À valider    |
 | Quota de votes (valider/infirmer)           | F2.6       | 30 par 24 h glissantes                                                                                                     | À valider    |
 | Suspension temporaire automatique           | F2.6       | 3 alertes d'abus en 7 jours → suspension 72 h                                                                              | À valider    |
-| Effet d'une suspension                      | F2.6, F9.3 | Connexion en lecture seule : pas de signalement, vote, évaluation ni quiz                                                  | À valider    |
+| Effet d'une suspension                      | F2.6, F9.3 | Connexion en lecture seule : pas de signalement, vote, évaluation, quiz ni demande de profil                               | À valider    |
 | Questions de quiz par jour                  | F5.2       | **5** (fixé par le cahier des charges)                                                                                     | Validé       |
 | Jour de référence du quiz                   | F5.2       | Jour calendaire, fuseau **Africa/Douala** (UTC+1)                                                                          | À valider    |
 | Points : signalement validé                 | F5.3       | +10                                                                                                                        | À valider    |

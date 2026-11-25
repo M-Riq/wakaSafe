@@ -382,7 +382,7 @@ export function seedPeople(t: Timeline): SeedPeople {
       {
         id: 'sanction-1',
         userId: DEMO_USER_IDS.suspended,
-        reason: 'Abus répétés des limites d’actions : suspension automatique de 72 h.',
+        reason: 'Abus répétés des limites d’actions\u00A0: suspension automatique de 72 h.',
         startsAt: suspensionStart,
         endsAt: suspensionEnd,
         createdBy: null,

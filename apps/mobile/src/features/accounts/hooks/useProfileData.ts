@@ -10,6 +10,7 @@ export const accountKeys = {
   documents: (requestId: string) => ['accounts', 'documents', requestId] as const,
   safetyContacts: (userId: string) => ['accounts', userId, 'safety-contacts'] as const,
   preferences: (userId: string) => ['accounts', userId, 'preferences'] as const,
+  agencies: ['agencies'] as const,
   agency: (agencyId: string) => ['agencies', agencyId] as const,
 };
 
@@ -53,6 +54,11 @@ export function useAgency(agencyId: string | null | undefined) {
     queryFn: () => agencies.getById(agencyId!),
     enabled: Boolean(agencyId),
   });
+}
+
+export function useAgencies() {
+  const { agencies } = useRepositories();
+  return useQuery({ queryKey: accountKeys.agencies, queryFn: () => agencies.list() });
 }
 
 /** Rights of the signed-in user (domain rules), refined once the latest request is loaded. */
