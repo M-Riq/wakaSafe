@@ -1,0 +1,18 @@
+{
+  "name": "@wakasafe/mock-data",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Implémentations mock des dépôts WakaSafe et jeu de données de démonstration (Yaoundé, Douala, Bafoussam).",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@wakasafe/data-contracts": "*",
+    "@wakasafe/domain": "*",
+    "zod": "^4.6.7"
+  }
+}

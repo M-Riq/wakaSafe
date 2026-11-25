@@ -49,7 +49,7 @@ Tant que M4 n'est pas activé, les alertes de trajet (F7.2) et le KPI « trajets
 flowchart TB
     subgraph MOBILE["apps/mobile — Expo (web + Android)"]
         M_UI["<b>src/ui</b><br/>Design system<br/>AppMap :<br/>.web.tsx → Leaflet<br/>.native.tsx → MapLibre"]
-        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)<br/>project-progress"]
+        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)"]
         M_SVC["<b>src/services</b><br/>StorageService<br/>LocationService<br/>MediaService (photo)<br/>NetworkService<br/>NotificationService<br/>SyncService"]
         M_DATA["<b>src/data</b><br/>composition root"]
         M_UI --> M_FEAT
@@ -91,18 +91,20 @@ Dépendances détaillées entre features et services de `apps/mobile` :
 
 ## 3.3 Interfaces exposées par `@wakasafe/data-contracts`
 
-| Interface                  | Modules    | Principales opérations                                                                                                |
-| -------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
-| `AuthRepository`           | M1, M9     | `register`, `login`, `logout`, `requestPasswordReset`, `resetPassword`, `getSession`                                  |
-| `UserRepository`           | M1, M9     | `getById`, `updateProfile`, `updatePreferences`, `listSafetyContacts`, `upsertSafetyContact`, `suspend`, `reactivate` |
-| `ProfileRequestRepository` | M1, M9     | `submit`, `uploadDocument`, `getForUser`, `listPending`, `approve`, `reject`                                          |
-| `ReportRepository`         | M2, M3, M9 | `getActionQuota`, `create`, `list(filters)`, `getById`, `vote(confirm/refute)`, `markHandled`, `close`                |
-| `ModerationRepository`     | M2, M9     | `listOpen`, `resolve`                                                                                                 |
-| `QuizRepository`           | M5, M9     | `getDailyQuestions`, `answer`, `listQuizzes`, `upsertQuiz`, `setActive`                                               |
-| `PointsRepository`         | M5         | `listEntries`, `getScore`, `getLeaderboard(monthly/annual)`                                                           |
-| `RatingRepository`         | M6         | `submit`, `listDrivers`, `listAgencies`, `getDriverStats`                                                             |
-| `NotificationRepository`   | M7         | `list`, `markAsRead`, `push` (simulation)                                                                             |
-| `StatsRepository`          | M9         | `getKpis`, `getHeatmap`, `exportRows`                                                                                 |
-| `KeyValueStore`            | toutes     | `get`, `set`, `remove` (persistance locale injectée dans les mocks)                                                   |
+| Interface                  | Modules    | Principales opérations                                                                                                                                                          |
+| -------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AuthRepository`           | M1, M9     | `register`, `login`, `logout`, `getSession`, `requestPasswordReset`, `resetPassword`                                                                                            |
+| `UserRepository`           | M1, M9     | `getById`, `list(filters)`, `updateProfile`, `getPreferences`, `updatePreferences`, `listSafetyContacts`, `upsertSafetyContact`, `removeSafetyContact`, `suspend`, `reactivate` |
+| `ProfileRequestRepository` | M1, M9     | `submit`, `uploadDocument`, `getForUser`, `listDocuments`, `listPending`, `approve`, `reject`                                                                                   |
+| `AgencyRepository`         | M1, M6     | `list`, `getById` (agences de rattachement des conducteurs)                                                                                                                     |
+| `ReportRepository`         | M2, M3, M9 | `getActionQuota`, `create`, `list(filters)`, `getById`, `getUserVote`, `vote(confirm/refute)`, `markHandled`, `close`                                                           |
+| `ModerationRepository`     | M2, M9     | `listOpen`, `resolve`                                                                                                                                                           |
+| `QuizRepository`           | M5, M9     | `getDailyQuestions`, `answer`, `listQuizzes`, `getQuestions`, `upsertQuiz`, `setActive`                                                                                         |
+| `PointsRepository`         | M5         | `listEntries`, `getScore`, `getLeaderboard(monthly/annual)`                                                                                                                     |
+| `RatingRepository`         | M6         | `getRatingEligibility`, `submit`, `listDrivers`, `listAgencies`, `getDriverStats`                                                                                               |
+| `NotificationRepository`   | M7         | `list`, `countUnread`, `markAsRead`, `markAllAsRead`, `push` (simulation)                                                                                                       |
+| `StatsRepository`          | M9         | `getKpis`, `getHeatmap`, `exportRows`                                                                                                                                           |
+| `KeyValueStore`            | toutes     | `get`, `set`, `remove` (persistance locale injectée dans les mocks)                                                                                                             |
+| `Clock`                    | toutes     | `now` (horloge injectable : quotas, classements, tests)                                                                                                                         |
 
-Signatures détaillées : définies en phase 1, à partir du [diagramme de classes](04-domain-classes.md).
+Signatures détaillées : [`packages/data-contracts/src`](../../packages/data-contracts/src). Les dépôts reçoivent l'identifiant de l'utilisateur concerné en paramètre explicite. En phase 1, les opérations des phases suivantes existent dans les mocks mais rejettent une erreur `NOT_IMPLEMENTED` qui indique leur phase.

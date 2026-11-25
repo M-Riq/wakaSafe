@@ -1,6 +1,6 @@
 # Règles métier et paramètres provisoires
 
-Le cahier des charges fixe les **règles** mais pas toujours les **valeurs**. Les valeurs ci-dessous sont des **propositions provisoires**, centralisées dans `packages/domain/src/config` à partir de la phase 1 et modifiables à un seul endroit. Elles doivent être **validées par GOSAFE**.
+Le cahier des charges fixe les **règles** mais pas toujours les **valeurs**. Les valeurs ci-dessous sont des **propositions provisoires**, centralisées dans l'objet `BUSINESS_RULES` de [`packages/domain/src/config/business-rules.ts`](../../packages/domain/src/config/business-rules.ts) et modifiables à un seul endroit. Elles doivent être **validées par GOSAFE**.
 
 | Paramètre                                   | Exigence   | Valeur proposée                                                                                                            | Statut       |
 | ------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- | ------------ |

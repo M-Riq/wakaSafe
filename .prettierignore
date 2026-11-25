@@ -1,0 +1,10 @@
+package-lock.json
+node_modules
+dist
+dist-android
+.expo
+.next
+coverage
+docs/source
+apps/mobile/android
+apps/mobile/ios

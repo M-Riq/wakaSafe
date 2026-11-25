@@ -12,11 +12,19 @@ node_modules/
 
 # Build outputs
 dist/
+dist-android/
 .next/
 out/
 web-build/
 .expo/
 coverage/
+*.tsbuildinfo
+
+# Expo generated files and native folders (prebuild, phase 11)
+expo-env.d.ts
+.metro-health-check*
+/apps/mobile/android/
+/apps/mobile/ios/
 
 # OS / editors
 .DS_Store

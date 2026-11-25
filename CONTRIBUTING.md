@@ -33,7 +33,7 @@ Les commits sont **atomiques** : un changement logique par commit.
 
 Une phase n'est terminée que si :
 
-1. lint, typecheck et tests passent ;
+1. lint, typecheck et tests passent (`npm run lint`, `npm run typecheck`, `npm test` à la racine) ;
 2. l'export web (client) et le build Next.js (admin) réussissent ;
 3. chaque écran fonctionne sur le web et reste compatible Android (pas d'API web-only ou native-only sans variante `.web.tsx` / `.native.tsx` ou `Platform.select`) ;
 4. README, diagrammes, ROADMAP, CHANGELOG et [matrice de traçabilité](docs/architecture/traceability.md) sont à jour ;
@@ -51,7 +51,8 @@ Une phase n'est terminée que si :
 
 ## 6. Documentation et diagrammes
 
-- Les diagrammes Mermaid de `docs/diagrams/` sont la **source de vérité**. Le README en contient une copie entre des balises `<!-- diagram:... -->` et `<!-- /diagram -->`. Toute modification est faite **aux deux endroits dans le même commit**. À partir de la phase 1, un script CI vérifiera la syntaxe et la synchronisation.
+- Les diagrammes Mermaid de `docs/diagrams/` sont la **source de vérité**. Le README en contient une copie entre des balises `<!-- diagram:... -->` et `<!-- /diagram -->`. Modifier d'abord `docs/diagrams/`, puis lancer `npm run sync:diagrams` pour recopier les blocs dans le README, dans le même commit. La CI vérifie la synchronisation (`npm run check:diagrams`) et la syntaxe (rendu `mermaid-cli`).
+- `ROADMAP.md` sert au suivi interne. L'interface n'affiche jamais de phase ni d'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
 - Toute décision structurante fait l'objet d'un **ADR** dans `docs/adr/`.
 - Toute modification notable est ajoutée au [CHANGELOG](CHANGELOG.md).
 

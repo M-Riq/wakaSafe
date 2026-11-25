@@ -2,7 +2,7 @@
 
 **Application citoyenne de prévention et de sécurité routière au Cameroun**, portée par l'**Association GOSAFE**.
 
-> Statut : **phase 0 — cadrage et architecture** (documentation uniquement, aucun code applicatif).
+> Statut : **phase 1 — fondations de l'app client** (monorepo, packages partagés, coquille de l'app Expo, CI). La phase 0 (cadrage et architecture) est terminée.
 > Avancement détaillé : [ROADMAP.md](ROADMAP.md).
 
 ## Sommaire
@@ -84,7 +84,7 @@ Pendant la validation, un Conducteur ou une Autorité **garde les droits Citoyen
 | Couche                   | Choix                                                                                                  | Pourquoi                                                                                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | Monorepo                 | **npm workspaces**                                                                                     | Aucun outil en plus, compatible Metro, Next.js et Vercel ([ADR-0002](docs/adr/0002-monorepo-npm-workspaces.md))                |
-| App client               | **Expo + React Native + TypeScript strict + Expo Router**                                              | Un seul code pour le web (démo) et Android, prévu par le cahier des charges ([ADR-0003](docs/adr/0003-client-app-stack.md))    |
+| App client               | **Expo (SDK 58) + React Native + TypeScript strict + Expo Router**                                     | Un seul code pour le web (démo) et Android, prévu par le cahier des charges ([ADR-0003](docs/adr/0003-client-app-stack.md))    |
 | Back-office              | **Next.js App Router + TypeScript strict + Tailwind CSS**, TanStack Table, Recharts, Leaflet + heatmap | Imposé par le cahier des charges. Adapté aux tableaux et graphiques sur desktop ([ADR-0004](docs/adr/0004-admin-app-stack.md)) |
 | Domaine partagé          | **TypeScript + Zod**                                                                                   | Mêmes types et mêmes règles métier dans les deux apps et dans le futur backend                                                 |
 | Données                  | **Interfaces de dépôts + implémentations mock**                                                        | Brancher l'API ou Supabase ne touche qu'une couche ([ADR-0005](docs/adr/0005-data-access-abstraction.md))                      |
@@ -113,7 +113,7 @@ flowchart TB
     subgraph MOBILE["apps/mobile — Expo + React Native + Expo Router"]
         direction TB
         M_UI["UI : écrans (app/), design system, AppMap"]
-        M_FEAT["features/ : accounts, reports, offline, quiz,<br/>ratings, notifications, project-progress"]
+        M_FEAT["features/ : accounts, reports, offline,<br/>quiz, ratings, notifications"]
         M_SVC["services/ : storage, location, camera,<br/>network, notification, sync"]
         M_ROOT["Composition root (src/data/)<br/>choix de l'implémentation des dépôts"]
         M_UI --> M_FEAT
@@ -312,7 +312,7 @@ flowchart LR
 flowchart TB
     subgraph MOBILE["apps/mobile — Expo (web + Android)"]
         M_UI["<b>src/ui</b><br/>Design system<br/>AppMap :<br/>.web.tsx → Leaflet<br/>.native.tsx → MapLibre"]
-        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)<br/>project-progress"]
+        M_FEAT["<b>src/features</b><br/>accounts (M1)<br/>reports (M2)<br/>offline (M3)<br/>quiz, points (M5)<br/>ratings (M6)<br/>notifications (M7)"]
         M_SVC["<b>src/services</b><br/>StorageService<br/>LocationService<br/>MediaService (photo)<br/>NetworkService<br/>NotificationService<br/>SyncService"]
         M_DATA["<b>src/data</b><br/>composition root"]
         M_UI --> M_FEAT
@@ -491,6 +491,7 @@ classDiagram
         +string id
         +PointReason reason
         +number points
+        +PointSourceType sourceType
         +string sourceId
         +DateTime createdAt
     }
@@ -1137,15 +1138,18 @@ wakasafe/
 │   ├── diagrams/       # diagrammes Mermaid (source de vérité)
 │   └── source/         # cahier des charges — local uniquement, ignoré par Git
 ├── apps/
-│   ├── mobile/         # Expo : web + Android (phase 1)
+│   ├── mobile/         # Expo : web + Android
+│   │   ├── app/        # routes Expo Router (minces)
+│   │   └── src/        # data (composition root), features, services, ui, lib
 │   └── admin/          # Next.js : back-office (phase 8)
 ├── packages/
 │   ├── domain/         # entités, schémas Zod, règles métier
 │   ├── data-contracts/ # interfaces des dépôts
 │   ├── mock-data/      # implémentations mock + jeux de démonstration
 │   └── design-tokens/  # couleurs, typographie, espacements
+├── scripts/            # contrôle CI : diagrammes du README
 ├── README.md  ROADMAP.md  CHANGELOG.md  CONTRIBUTING.md
-└── .env.example        # (phase 1)
+└── .env.example        # variables publiques (aucun secret)
 ```
 
 Arborescence détaillée et conventions : [docs/architecture/overview.md](docs/architecture/overview.md).
@@ -1412,22 +1416,22 @@ Contraintes d'intégrité et points à adapter selon le SGBD (géolocalisation P
 
 ## 8. Roadmap
 
-| Phase | Contenu                                                                                                       | Statut         |
-| ----- | ------------------------------------------------------------------------------------------------------------- | -------------- |
-| 0     | Cadrage, architecture, documentation                                                                          | 🟡 En cours    |
-| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI, page « Avancement du projet » | ⬜             |
-| 2     | M1 Comptes et profils                                                                                         | ⬜             |
-| 3     | M2 Signalements et carte                                                                                      | ⬜             |
-| 4     | M3 Mode hors ligne                                                                                            | ⬜             |
-| 5     | M5 Quiz, points, classements                                                                                  | ⬜             |
-| 6     | M6 Évaluation des conducteurs                                                                                 | ⬜             |
-| 7     | M7 Notifications                                                                                              | ⬜             |
-| 8     | Back-office : fondations, validation des profils, modération                                                  | ⬜             |
-| 9     | Back-office : quiz, KPI et heatmap, export CSV, vue Autorité                                                  | ⬜             |
-| 10    | M4 Partage de trajet + M8 Mode conduite                                                                       | ⏸️ Optionnelle |
-| 11    | Build Android (APK de test)                                                                                   | ⬜             |
-| 12    | Backend et base de données réels                                                                              | ⬜             |
-| 13    | Sécurité, qualité, préparation de la publication                                                              | ⬜             |
+| Phase | Contenu                                                                        | Statut         |
+| ----- | ------------------------------------------------------------------------------ | -------------- |
+| 0     | Cadrage, architecture, documentation                                           | ✅ Terminée    |
+| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI | 🔵 En revue    |
+| 2     | M1 Comptes et profils                                                          | ⬜             |
+| 3     | M2 Signalements et carte                                                       | ⬜             |
+| 4     | M3 Mode hors ligne                                                             | ⬜             |
+| 5     | M5 Quiz, points, classements                                                   | ⬜             |
+| 6     | M6 Évaluation des conducteurs                                                  | ⬜             |
+| 7     | M7 Notifications                                                               | ⬜             |
+| 8     | Back-office : fondations, validation des profils, modération                   | ⬜             |
+| 9     | Back-office : quiz, KPI et heatmap, export CSV, vue Autorité                   | ⬜             |
+| 10    | M4 Partage de trajet + M8 Mode conduite                                        | ⏸️ Optionnelle |
+| 11    | Build Android (APK de test)                                                    | ⬜             |
+| 12    | Backend et base de données réels                                               | ⬜             |
+| 13    | Sécurité, qualité, préparation de la publication                               | ⬜             |
 
 Détail, branches et définition de terminé : [ROADMAP.md](ROADMAP.md). Rattachement des exigences : [matrice de traçabilité](docs/architecture/traceability.md).
 
@@ -1443,29 +1447,44 @@ Détails : [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 10. Application client (`apps/mobile`)
 
-> ⏳ Disponible à partir de la **phase 1**. Les commandes ci-dessous sont **prévues** et seront vérifiées à ce moment-là.
+> Phase 1 : coquille de l'app (accueil, choix d'un profil de démo, onglets, profil, espace Conducteur). Les écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)). L'app n'affiche aucune information sur les phases ni sur l'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
 
-**Prérequis** : Node.js LTS (version fixée dans `.nvmrc`), npm. Pour Android : un téléphone Android 8+ ou un émulateur (Android Studio).
+**Prérequis** : Node.js 24 LTS (fixé dans `.nvmrc` ; Node 26 fonctionne aussi), npm 10 ou plus. Pour Android : un téléphone Android 8+ avec Expo Go, ou un émulateur (Android Studio).
 
 ```bash
-npm install                  # à la racine du dépôt (npm workspaces)
-npm run dev:mobile           # lance l'app client dans le navigateur
-npm run android              # lance l'app client sur Android (phase 11 pour la carte native)
-npm run build:mobile         # export web statique (expo export --platform web)
+npm ci                       # à la racine du dépôt (npm workspaces, versions du lockfile)
+npm run dev:mobile           # serveur de développement, ouvre l'app dans le navigateur
+npm run start:mobile         # serveur de développement + QR code à scanner avec Expo Go
+npm run android              # serveur de développement + ouverture sur Android (téléphone USB ou émulateur)
+npm run build:mobile         # export web statique dans apps/mobile/dist
+npm run export:android -w @wakasafe/mobile   # vérifie que le bundle Android se construit
 ```
 
-**URL de démonstration** : _à venir (projet Vercel « wakasafe-client », phase 1)_.
+**Tester sur un téléphone Android physique (Expo Go)**. Il n'est pas nécessaire d'installer Android Studio : l'app tourne dans **Expo Go**, qui doit être compatible avec le **SDK 58** (version du Play Store ou [expo.dev/go](https://expo.dev/go)).
 
-**Comptes de démonstration** (fictifs, données mock, disponibles à partir de la phase 2) :
+1. Mettre le PC et le téléphone sur le **même réseau Wi-Fi**. Le partage de connexion du téléphone convient aussi.
+2. Lancer `npm run start:mobile`, puis scanner le QR code affiché dans le terminal depuis Expo Go. Le premier chargement prend une à deux minutes. Ensuite, chaque modification enregistrée se recharge sur le téléphone.
+3. Si le téléphone ne trouve pas le PC, il y a deux solutions :
+   - **Câble USB** : activer le débogage USB sur le téléphone et installer les [Android platform-tools](https://developer.android.com/tools/releases/platform-tools) (`adb`). Lancer `adb reverse tcp:8081 tcp:8081`, puis saisir `exp://127.0.0.1:8081` dans Expo Go.
+   - **Tunnel** : lancer `npx expo start --tunnel` dans `apps/mobile`.
 
-| Profil                | Téléphone        | Mot de passe    | Particularité                                       |
-| --------------------- | ---------------- | --------------- | --------------------------------------------------- |
-| Citoyen               | +237 600 000 001 | `demo-wakasafe` | Yaoundé, historique de signalements et de points    |
-| Conducteur validé     | +237 600 000 002 | `demo-wakasafe` | Agence fictive, évaluations reçues                  |
-| Conducteur en attente | +237 600 000 003 | `demo-wakasafe` | Demande en attente, droits Citoyen                  |
-| Autorité              | +237 600 000 004 | `demo-wakasafe` | Aussi utilisable dans le back-office (vue Autorité) |
+Sous Windows, autoriser Node.js dans le pare-feu (réseau **privé**) quand Windows le demande au premier lancement.
 
-Les numéros, noms et agences de démonstration sont **fictifs**. Aucune agence réelle n'est évaluée avec des données inventées.
+Variables d'environnement (facultatives) : copier [`.env.example`](.env.example) dans `apps/mobile/.env.local`. Détail : [docs/architecture/overview.md](docs/architecture/overview.md#variables-denvironnement).
+
+**URL de démonstration** : **<https://wakasafe-client.vercel.app>** (version de `main`, active dès la fusion de la phase 1). Chaque PR reçoit en plus sa propre URL de prévisualisation (voir [section 13](#13-déploiement-de-la-démo)).
+
+**Comptes de démonstration** (fictifs, données mock). En phase 1, on y accède par l'écran **« Choisir un profil de démo »**, sans saisie. La connexion par téléphone et mot de passe arrive en phase 2.
+
+| Profil                | Téléphone         | Mot de passe    | Particularité                                                             |
+| --------------------- | ----------------- | --------------- | ------------------------------------------------------------------------- |
+| Citoyenne             | +237 600 00 00 01 | `demo-wakasafe` | Nadège Atangana, Yaoundé : historique de signalements et de points        |
+| Conducteur validé     | +237 600 00 00 02 | `demo-wakasafe` | Paul Ekwalla, agence fictive (Douala) : accès à l'espace Conducteur       |
+| Conducteur en attente | +237 600 00 00 03 | `demo-wakasafe` | Samuel Fotso, Bafoussam : demande en attente, droits Citoyen              |
+| Autorité              | +237 600 00 00 04 | `demo-wakasafe` | Brigitte Ngo Mbock : droits Citoyen dans l'app, vue Autorité dans l'admin |
+| Compte suspendu       | +237 600 00 01 05 | `demo-wakasafe` | Hervé Nkoulou : suspension temporaire, lecture seule                      |
+
+Les numéros, noms et agences de démonstration sont **fictifs**. Aucune agence réelle n'est évaluée avec des données inventées. Le mot de passe de démonstration est public et ne protège aucune donnée réelle.
 
 ## 11. Back-office (`apps/admin`)
 
@@ -1481,34 +1500,55 @@ npm run build:admin          # build de production Next.js
 
 **Comptes de démonstration** (fictifs, disponibles à partir de la phase 8) :
 
-| Profil         | Téléphone        | Mot de passe    | Accès                          |
-| -------------- | ---------------- | --------------- | ------------------------------ |
-| Administrateur | +237 600 000 000 | `demo-wakasafe` | Tout le back-office            |
-| Autorité       | +237 600 000 004 | `demo-wakasafe` | Vue Autorité uniquement (F9.7) |
+| Profil         | Téléphone         | Mot de passe    | Accès                          |
+| -------------- | ----------------- | --------------- | ------------------------------ |
+| Administrateur | +237 600 00 00 00 | `demo-wakasafe` | Tout le back-office            |
+| Autorité       | +237 600 00 00 04 | `demo-wakasafe` | Vue Autorité uniquement (F9.7) |
 
 > ⚠️ En démo, l'authentification du back-office est **simulée** : elle ne protège aucune donnée réelle. La connexion sécurisée réelle arrive avec le backend (phase 12).
 
 ## 12. Tests et qualité
 
-À partir de la phase 1, les commandes suivantes s'exécutent à la racine pour tous les workspaces. La CI GitHub Actions les lance sur chaque PR, pour chaque app :
+Commandes à lancer à la racine ; elles couvrent tous les workspaces :
 
 ```bash
-npm run lint          # ESLint + Prettier
-npm run typecheck     # tsc --noEmit (TypeScript strict)
-npm test              # Jest + Testing Library
-npm run build         # export web du client + build Next.js de l'admin
+npm run lint             # ESLint (0 avertissement toléré) + Prettier --check
+npm run format           # applique Prettier
+npm run typecheck        # tsc --noEmit dans chaque workspace (TypeScript strict)
+npm test                 # Jest dans chaque workspace (Testing Library pour les écrans)
+npm run build            # builds de tous les workspaces (aujourd'hui : export web du client)
+npm run check:diagrams   # les diagrammes du README sont identiques à docs/diagrams/
+npm run sync:diagrams    # recopie les diagrammes de docs/diagrams/ dans le README
 ```
 
-Priorités de test : règles métier de `packages/domain` (seuils, quotas, anti-abus, 5 questions par jour, classements), implémentations mock, parcours principaux des écrans.
+La **CI GitHub Actions** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) s'exécute sur chaque PR et sur `main` :
+
+- **Qualité** : installation propre (`npm ci`), lint, typecheck, tests, export web du client et export du bundle Android ;
+- **Documentation** : `check:diagrams`, puis rendu de chaque diagramme Mermaid avec `mermaid-cli` (un diagramme invalide fait échouer la CI).
+
+Le build Next.js du back-office rejoindra la CI en phase 8.
+
+Priorités de test : règles métier de `packages/domain` (seuils, quotas, anti-abus, 5 questions par jour, classements), implémentations mock, parcours principaux des écrans (gardes de routes par rôle, session).
 
 ## 13. Déploiement de la démo
 
 Deux projets **Vercel** distincts, reliés à ce dépôt, chacun avec une **URL de prévisualisation par PR** ([ADR-0008](docs/adr/0008-demo-hosting-vercel.md)) :
 
-| Projet            | Dossier racine | Build                            | Sortie                  |
-| ----------------- | -------------- | -------------------------------- | ----------------------- |
-| `wakasafe-client` | `apps/mobile`  | `npx expo export --platform web` | `dist/` (site statique) |
-| `wakasafe-admin`  | `apps/admin`   | `next build`                     | préréglage Next.js      |
+| Projet            | Dossier racine | Installation         | Build                                          | Sortie                  |
+| ----------------- | -------------- | -------------------- | ---------------------------------------------- | ----------------------- |
+| `wakasafe-client` | `apps/mobile`  | `cd ../.. && npm ci` | `npm run build` (`expo export --platform web`) | `dist/` (site statique) |
+| `wakasafe-admin`  | `apps/admin`   | à définir en phase 8 | `next build`                                   | préréglage Next.js      |
+
+La configuration du client est versionnée dans [`apps/mobile/vercel.json`](apps/mobile/vercel.json) : installation depuis la racine du monorepo, réécriture de toutes les URL vers `index.html` (liens directs et rafraîchissement), cache long des fichiers statiques.
+
+**Projet `wakasafe-client`** (connecté le 2026-11-24) : URL de production **<https://wakasafe-client.vercel.app>**, qui suit `main`. Réglages indispensables dans Vercel (Settings → Build and Deployment) :
+
+- **Root Directory** : `apps/mobile`. Sans ce réglage, Vercel ignore `apps/mobile/vercel.json` et le build échoue (« No Output Directory named "public" found »).
+- **Include files outside the root directory** : activé (accès à `packages/`).
+- **Framework Preset** : « Other » ; commandes laissées vides (lues dans `vercel.json`).
+- **Node.js Version** : 24.x, comme la CI et `.nvmrc`.
+
+Les URL de prévisualisation des PR sont protégées par Vercel Authentication : seuls les membres du compte Vercel les ouvrent. Le client utilise l'URL de production.
 
 Le responsable du projet crée les comptes et connecte le dépôt. Aucun secret n'est versionné.
 

@@ -8,7 +8,7 @@ Légende des statuts : ⬜ à faire · 🟡 en cours · ✅ fait · ⏸️ optio
 | --------- | -------------------------------------------------------------------------------------- | ------------------------------ | ------ | ---------------------------------------------------- | ------ |
 | F1.1      | Inscription (nom, prénom, téléphone, mot de passe, photo facultative, profil souhaité) | client                         | 2      | `AuthRepository`, `ProfileRequestRepository`         | ⬜     |
 | F1.2      | Connexion téléphone + mot de passe, réinitialisation                                   | client                         | 2      | `AuthRepository`                                     | ⬜     |
-| F1.3      | Citoyen actif immédiatement, Conducteur/Autorité en attente + notification             | client                         | 2 (+7) | `ProfileRequestRepository`, `NotificationRepository` | ⬜     |
+| F1.3      | Citoyen actif immédiatement, Conducteur/Autorité en attente + notification             | client                         | 2 (+7) | `ProfileRequestRepository`, `NotificationRepository` | 🟡     |
 | F1.4      | Téléversement des justificatifs                                                        | client                         | 2      | `ProfileRequestRepository`                           | ⬜     |
 | F1.5      | Profil, préférences, contacts de sécurité                                              | client                         | 2      | `UserRepository`                                     | ⬜     |
 | F2.1      | 10 catégories de signalement                                                           | client                         | 3      | `domain` (`ReportCategory`)                          | ⬜     |
@@ -41,3 +41,19 @@ Légende des statuts : ⬜ à faire · 🟡 en cours · ✅ fait · ⏸️ optio
 | F9.6      | Export CSV                                                                             | admin                          | 9      | `StatsRepository.exportRows`                         | ⬜     |
 | F9.7      | Vue Autorité simplifiée                                                                | admin                          | 9      | `ReportRepository.markHandled`                       | ⬜     |
 | ENF       | Sécurité, protection des données, performance (§5)                                     | les deux                       | 12, 13 | —                                                    | ⬜     |
+
+## Couverture de la phase 1 (fondations)
+
+La phase 1 ne livre aucune exigence fonctionnelle complète. Elle pose le socle dont les phases suivantes ont besoin :
+
+| Élément livré                                                                                                                                                                                                      | Exigences préparées   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- |
+| Entités et schémas Zod de tout le domaine, paramètres métier centralisés (`BUSINESS_RULES`)                                                                                                                        | toutes                |
+| Interfaces de tous les dépôts (`@wakasafe/data-contracts`) et mocks persistés localement, avec jeux de démonstration                                                                                               | toutes                |
+| Opérations de lecture implémentées en mock : connexion, session, déconnexion, utilisateurs, préférences, contacts de sécurité, demandes de profil, agences. Les autres répondent `NOT_IMPLEMENTED` avec leur phase | F1.1, F1.2, F1.5      |
+| Capacités par rôle (`getClientCapabilities`) et gardes de routes : une demande en attente garde les droits Citoyen                                                                                                 | F1.3 (🟡), F2.6, F9.3 |
+| Compte suspendu : connexion en lecture seule, bandeau d'information                                                                                                                                                | F2.6, F9.3            |
+| Espace Conducteur réservé au Conducteur validé (contenu en phase 6)                                                                                                                                                | F6.4                  |
+| Normalisation et affichage des numéros camerounais                                                                                                                                                                 | F1.1, F1.2            |
+
+F1.3 est **en cours** : la règle « demande en attente = droits Citoyen » est appliquée et testée. Le dépôt de la demande (phase 2) et la notification (phase 7) restent à faire.
