@@ -17,6 +17,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Le 
   - `MediaService` : choix d'une photo (appareil photo ou galerie sur Android, sélecteur de fichier sur le web) puis compression, avec `expo-image-picker` et `expo-image-manipulator` ;
   - composants de formulaire (champ texte, choix, case à cocher, interrupteur, avatar) ;
   - tests des parcours : connexion, inscription Citoyen et Conducteur, réinitialisation, profil, contacts, préférences, demande et justificatifs.
+- Préparation de la future charte graphique GOSAFE ([ADR-0011](docs/adr/0011-provisional-theme-and-brand-guidelines.md)) : procédure de changement de charte, composant `BrandLogo` (logo remplaçable à un seul endroit), règle ESLint qui refuse les couleurs en dur dans les applications, test qui garde les couleurs de `app.json` alignées sur les tokens, token `sizes.borderWidthStrong`.
 
 #### Modifié
 

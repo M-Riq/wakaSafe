@@ -4,6 +4,9 @@ const expoConfig = require('eslint-config-expo/flat');
 const prettierConfig = require('eslint-config-prettier/flat');
 const globals = require('globals');
 
+const HARD_CODED_COLOUR =
+  'Use a colour token from @/ui (packages/design-tokens) instead of a hard-coded colour (ADR-0011).';
+
 module.exports = defineConfig([
   globalIgnores([
     '**/node_modules/**',
@@ -68,6 +71,34 @@ module.exports = defineConfig([
               message: 'Only src/data (composition root) may import @wakasafe/mock-data.',
             },
           ],
+        },
+      ],
+    },
+  },
+  {
+    // ADR-0011: colours come only from @wakasafe/design-tokens, so the GOSAFE brand
+    // guidelines can replace the provisional theme in one place.
+    files: ['apps/*/**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]',
+          message: HARD_CODED_COLOUR,
+        },
+        {
+          selector: 'Literal[value=/\\b(?:rgb|hsl)a?\\(/i]',
+          message: HARD_CODED_COLOUR,
+        },
+        {
+          selector: 'TemplateElement[value.raw=/\\b(?:rgb|hsl)a?\\(/i]',
+          message: HARD_CODED_COLOUR,
+        },
+        {
+          // Named colours ('white', 'red'...) given to colour props and styles.
+          selector:
+            ':matches(Property[key.name=/[cC]olor$/] > Literal, JSXAttribute[name.name=/[cC]olor$/] > Literal, JSXAttribute[name.name=/[cC]olor$/] > JSXExpressionContainer > Literal)[value=/^(?!transparent$)[a-zA-Z]+$/]',
+          message: HARD_CODED_COLOUR,
         },
       ],
     },

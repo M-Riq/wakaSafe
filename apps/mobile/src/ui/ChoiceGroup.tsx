@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     width: RADIO_SIZE,
     height: RADIO_SIZE,
     borderRadius: radii.pill,
-    borderWidth: 2,
+    borderWidth: sizes.borderWidthStrong,
     borderColor: colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',

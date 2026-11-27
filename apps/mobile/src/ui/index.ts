@@ -2,6 +2,7 @@ export { AppText, type AppTextProps } from './AppText';
 export { Avatar } from './Avatar';
 export { Badge, type BadgeTone } from './Badge';
 export { Banner } from './Banner';
+export { BrandLogo } from './BrandLogo';
 export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
 export { Checkbox } from './Checkbox';

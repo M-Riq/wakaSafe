@@ -6,13 +6,12 @@ import {
   AppText,
   Badge,
   Banner,
+  BrandLogo,
   Button,
   Card,
   colors,
   Icon,
-  radii,
   Screen,
-  sizes,
   spacing,
 } from '@/ui';
 
@@ -21,9 +20,7 @@ export function WelcomeScreen() {
   return (
     <Screen testID="welcome">
       <View style={styles.hero}>
-        <View style={styles.logo}>
-          <Icon name="shield-checkmark" size={sizes.iconLg + spacing.lg} color={colors.onPrimary} />
-        </View>
+        <BrandLogo />
         <View style={styles.brand}>
           <AppText variant="display">{fr.common.appName}</AppText>
           <Badge label={fr.common.demoBadge} tone="warning" />
@@ -75,14 +72,6 @@ export function WelcomeScreen() {
 
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', gap: spacing.md, paddingTop: spacing.xl },
-  logo: {
-    width: sizes.touchTarget * 2,
-    height: sizes.touchTarget * 2,
-    borderRadius: radii.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-  },
   brand: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   centered: { textAlign: 'center' },
   features: { gap: spacing.md },

@@ -1573,18 +1573,19 @@ Les deux apps sont servies sur **deux URL différentes**, et chacune stocke ses 
 
 ## 14. Décisions d'architecture (ADR)
 
-| N°                                                             | Décision                                                   | Statut  |
-| -------------------------------------------------------------- | ---------------------------------------------------------- | ------- |
-| [0001](docs/adr/0001-two-web-applications.md)                  | Deux applications web : client Expo et back-office Next.js | Accepté |
-| [0002](docs/adr/0002-monorepo-npm-workspaces.md)               | Monorepo avec npm workspaces                               | Accepté |
-| [0003](docs/adr/0003-client-app-stack.md)                      | Stack de l'application client                              | Proposé |
-| [0004](docs/adr/0004-admin-app-stack.md)                       | Stack du back-office                                       | Proposé |
-| [0005](docs/adr/0005-data-access-abstraction.md)               | Abstraction des données et mocks                           | Proposé |
-| [0006](docs/adr/0006-maps-openstreetmap.md)                    | Cartographie OSM et composant `AppMap`                     | Proposé |
-| [0007](docs/adr/0007-notifications-in-app-first.md)            | Notifications in-app d'abord, FCM plus tard                | Accepté |
-| [0008](docs/adr/0008-demo-hosting-vercel.md)                   | Hébergement de la démo sur Vercel                          | Accepté |
-| [0009](docs/adr/0009-profile-requests-and-authority-access.md) | Demandes de profil et accès Autorité au back-office        | Accepté |
-| [0010](docs/adr/0010-confidential-source-documents.md)         | Documents sources confidentiels hors du dépôt              | Accepté |
+| N°                                                              | Décision                                                   | Statut  |
+| --------------------------------------------------------------- | ---------------------------------------------------------- | ------- |
+| [0001](docs/adr/0001-two-web-applications.md)                   | Deux applications web : client Expo et back-office Next.js | Accepté |
+| [0002](docs/adr/0002-monorepo-npm-workspaces.md)                | Monorepo avec npm workspaces                               | Accepté |
+| [0003](docs/adr/0003-client-app-stack.md)                       | Stack de l'application client                              | Accepté |
+| [0004](docs/adr/0004-admin-app-stack.md)                        | Stack du back-office                                       | Accepté |
+| [0005](docs/adr/0005-data-access-abstraction.md)                | Abstraction des données et mocks                           | Accepté |
+| [0006](docs/adr/0006-maps-openstreetmap.md)                     | Cartographie OSM et composant `AppMap`                     | Accepté |
+| [0007](docs/adr/0007-notifications-in-app-first.md)             | Notifications in-app d'abord, FCM plus tard                | Accepté |
+| [0008](docs/adr/0008-demo-hosting-vercel.md)                    | Hébergement de la démo sur Vercel                          | Accepté |
+| [0009](docs/adr/0009-profile-requests-and-authority-access.md)  | Demandes de profil et accès Autorité au back-office        | Accepté |
+| [0010](docs/adr/0010-confidential-source-documents.md)          | Documents sources confidentiels hors du dépôt              | Accepté |
+| [0011](docs/adr/0011-provisional-theme-and-brand-guidelines.md) | Thème provisoire et passage à la charte GOSAFE             | Accepté |
 
 ## 15. Hypothèses et points ouverts
 
@@ -1592,7 +1593,7 @@ Les deux apps sont servies sur **deux URL différentes**, et chacune stocke ses 
 
 - Les paramètres métier (seuils de validation, quotas, barème de points, période anti-abus, rayon d'alerte…) sont **provisoires et configurables** : [business-rules.md](docs/architecture/business-rules.md).
 - Les questions de quiz de démonstration sont marquées **« Contenu provisoire, à remplacer par le contenu GOSAFE »**.
-- Le thème graphique est **neutre**, modifiable à un seul endroit (`packages/design-tokens`), en attendant la charte GOSAFE.
+- Le thème graphique est **neutre et provisoire**, modifiable à un seul endroit (`packages/design-tokens`), en attendant la charte GOSAFE. La procédure de changement de charte est décrite dans l'[ADR-0011](docs/adr/0011-provisional-theme-and-brand-guidelines.md).
 - Nom affiché : **WakaSafe**.
 
 **Points ouverts** :
