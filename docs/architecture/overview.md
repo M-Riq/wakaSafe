@@ -25,8 +25,8 @@ wakasafe/
 │   │       ├── data/              # composition root (seul import de mock-data)
 │   │       ├── features/          # accounts, ratings (phase 1) ;
 │   │       │                      # reports, offline, quiz, points, notifications (phases 3 à 7)
-│   │       ├── services/          # storage (phase 1) ; location, media, network,
-│   │       │                      # notification, sync (phases 3 à 7)
+│   │       ├── services/          # storage (phase 1), media (phase 2) ; location,
+│   │       │                      # network, notification, sync (phases 3 à 7)
 │   │       ├── ui/                # design system RN ; AppMap .web / .native (phase 3)
 │   │       └── lib/               # i18n fr, config, erreurs, client de requêtes
 │   └── admin/                     # Next.js App Router — web
@@ -65,17 +65,17 @@ Les routes de `app/` restent **minces** : elles importent un écran depuis `feat
 
 ## Conventions
 
-| Sujet         | Règle                                                                                                                                                                                                |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Langue        | Code, noms, commits : **anglais**. UI, docs, messages au responsable : **français**.                                                                                                                 |
-| TypeScript    | `strict: true`, `noUncheckedIndexedAccess: true`, pas de `any` implicite.                                                                                                                            |
-| Imports       | Les features n'importent que `@wakasafe/domain`, `@wakasafe/data-contracts`, `services/` et `ui/`. Seul `src/data/` importe une implémentation ([ADR-0005](../adr/0005-data-access-abstraction.md)). |
-| Plateformes   | Pas d'API web-only ou native-only sans variante : fichiers `.web.tsx` / `.native.tsx` ou `Platform.select`.                                                                                          |
-| Thème         | Toute couleur, taille ou espacement vient de `@wakasafe/design-tokens`. Aucune valeur en dur dans les composants.                                                                                    |
-| Accessibilité | Zones tactiles d'au moins 48 × 48 dp, contraste WCAG AA, `accessibilityLabel` sur les icônes, police réglable par le système.                                                                        |
-| Performance   | Images compressées, listes virtualisées, chargement paresseux de la carte, pas de bibliothèque lourde sans justification.                                                                            |
-| Textes        | Tous les libellés de l'UI sont dans le dictionnaire `fr`, jamais en dur.                                                                                                                             |
-| Tests         | Règles du domaine : tests unitaires obligatoires. Écrans : tests RNTL ou RTL des parcours principaux.                                                                                                |
+| Sujet         | Règle                                                                                                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Langue        | Code, noms, commits : **anglais**. UI, docs, messages au responsable : **français**.                                                                                                                                      |
+| TypeScript    | `strict: true`, `noUncheckedIndexedAccess: true`, pas de `any` implicite.                                                                                                                                                 |
+| Imports       | Les features n'importent que `@wakasafe/domain`, `@wakasafe/data-contracts`, `services/` et `ui/`. Seul `src/data/` importe une implémentation ([ADR-0005](../adr/0005-data-access-abstraction.md)).                      |
+| Plateformes   | Pas d'API web-only ou native-only sans variante : fichiers `.web.tsx` / `.native.tsx` ou `Platform.select`.                                                                                                               |
+| Thème         | Toute couleur, taille ou espacement vient de `@wakasafe/design-tokens`. Aucune valeur en dur dans les composants : ESLint refuse les couleurs en dur ([ADR-0011](../adr/0011-provisional-theme-and-brand-guidelines.md)). |
+| Accessibilité | Zones tactiles d'au moins 48 × 48 dp, contraste WCAG AA, `accessibilityLabel` sur les icônes, police réglable par le système.                                                                                             |
+| Performance   | Images compressées, listes virtualisées, chargement paresseux de la carte, pas de bibliothèque lourde sans justification.                                                                                                 |
+| Textes        | Tous les libellés de l'UI sont dans le dictionnaire `fr`, jamais en dur.                                                                                                                                                  |
+| Tests         | Règles du domaine : tests unitaires obligatoires. Écrans : tests RNTL ou RTL des parcours principaux.                                                                                                                     |
 
 ## Variables d'environnement
 

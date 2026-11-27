@@ -197,3 +197,245 @@ describe('mock repositories', () => {
     await expectCode(repos.quiz.getDailyQuestions(DEMO_USER_IDS.citizen), 'NOT_IMPLEMENTED');
   });
 });
+
+describe('mock accounts and profiles (M1)', () => {
+  const newcomer = {
+    firstName: ' Aïcha ',
+    lastName: 'Bello',
+    phone: '6 99 11 22 33',
+    password: 'Securite2026',
+    photoUrl: null,
+  };
+
+  function setup(now: () => Date = clock.now) {
+    const store = createMemoryKeyValueStore();
+    return { store, repos: createMockRepositories({ store, clock: { now } }) };
+  }
+
+  it('registers an active citizen, opens a session and accepts the new password', async () => {
+    const { repos } = setup();
+    const { user, session } = await repos.auth.register(newcomer);
+
+    expect(user).toMatchObject({
+      firstName: 'Aïcha',
+      phone: '+237699112233',
+      role: 'CITIZEN',
+      status: 'ACTIVE',
+    });
+    expect(session.userId).toBe(user.id);
+    expect((await repos.auth.getSession())?.user.id).toBe(user.id);
+    expect((await repos.users.getPreferences(user.id)).nearbyDangerAlerts).toBe(true);
+    await expect(repos.auth.login('+237699112233', 'Securite2026')).resolves.toBeTruthy();
+  });
+
+  it('rejects an invalid registration with field codes and a phone already in use', async () => {
+    const { repos } = setup();
+    await expect(
+      repos.auth.register({ ...newcomer, firstName: '', password: 'court' }),
+    ).rejects.toMatchObject({
+      code: 'VALIDATION_FAILED',
+      details: { fields: { firstName: 'REQUIRED', password: 'PASSWORD_TOO_SHORT' } },
+    });
+    await expect(
+      repos.auth.register({ ...newcomer, phone: '+237600000001' }),
+    ).rejects.toMatchObject({
+      code: 'CONFLICT',
+      details: { reason: 'PHONE_TAKEN', fields: { phone: 'PHONE_TAKEN' } },
+    });
+  });
+
+  it('resets a password with the code, once, and closes the session of the account', async () => {
+    const { repos } = setup();
+    await repos.auth.login('+237600000001', DEMO_PASSWORD);
+
+    const unknown = await repos.auth.requestPasswordReset('+237699999999');
+    expect(unknown.demoCode).toBeNull();
+
+    const { demoCode, expiresAt } = await repos.auth.requestPasswordReset('6 00 00 00 01');
+    expect(demoCode).toMatch(/^\d{6}$/);
+    expect(new Date(expiresAt).getTime() - NOW.getTime()).toBe(
+      BUSINESS_RULES.accounts.resetCodeValidityMinutes * 60_000,
+    );
+
+    const wrongCode = demoCode === '000000' ? '111111' : '000000';
+    const reset = { phone: '+237600000001', code: wrongCode, newPassword: 'NouveauCode9' };
+    await expectCode(repos.auth.resetPassword(reset), 'INVALID_RESET_CODE');
+    await repos.auth.resetPassword({ ...reset, code: demoCode! });
+
+    expect(await repos.auth.getSession()).toBeNull();
+    await expectCode(repos.auth.login('+237600000001', DEMO_PASSWORD), 'INVALID_CREDENTIALS');
+    await expect(repos.auth.login('+237600000001', 'NouveauCode9')).resolves.toBeTruthy();
+    await expectCode(repos.auth.resetPassword({ ...reset, code: demoCode! }), 'INVALID_RESET_CODE');
+  });
+
+  it('invalidates a reset code after it expires or after too many wrong attempts', async () => {
+    let now = NOW;
+    const { repos } = setup(() => now);
+    const reset = { phone: '+237600000001', newPassword: 'NouveauCode9' };
+
+    const first = await repos.auth.requestPasswordReset(reset.phone);
+    now = new Date(first.expiresAt);
+    await expectCode(
+      repos.auth.resetPassword({ ...reset, code: first.demoCode! }),
+      'INVALID_RESET_CODE',
+    );
+
+    const second = await repos.auth.requestPasswordReset(reset.phone);
+    const wrongCode = second.demoCode === '000000' ? '111111' : '000000';
+    for (let i = 0; i < BUSINESS_RULES.accounts.resetCodeMaxAttempts; i += 1) {
+      await expectCode(
+        repos.auth.resetPassword({ ...reset, code: wrongCode }),
+        'INVALID_RESET_CODE',
+      );
+    }
+    await expectCode(
+      repos.auth.resetPassword({ ...reset, code: second.demoCode! }),
+      'INVALID_RESET_CODE',
+    );
+  });
+
+  it('updates the profile and the preferences but never the phone number', async () => {
+    const { repos } = setup();
+    const user = await repos.users.updateProfile(DEMO_USER_IDS.citizen, {
+      firstName: 'Nadia',
+      phone: '+237699000000',
+    } as never);
+    expect(user).toMatchObject({
+      firstName: 'Nadia',
+      lastName: 'Atangana',
+      phone: '+237600000001',
+    });
+
+    const preferences = await repos.users.updatePreferences(DEMO_USER_IDS.citizen, {
+      quizReminders: false,
+    });
+    expect(preferences).toMatchObject({ quizReminders: false, nearbyDangerAlerts: true });
+    await expectCode(
+      repos.users.updateProfile(DEMO_USER_IDS.citizen, { lastName: ' ' }),
+      'VALIDATION_FAILED',
+    );
+  });
+
+  it('manages up to the maximum number of distinct safety contacts', async () => {
+    const { repos } = setup();
+    const userId = DEMO_USER_IDS.citizen;
+    const existing = await repos.users.listSafetyContacts(userId);
+    const { maxSafetyContacts } = BUSINESS_RULES.accounts;
+
+    await expect(
+      repos.users.upsertSafetyContact(userId, {
+        name: 'Doublon',
+        phone: existing[0]!.phone,
+        relation: null,
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLICT', details: { reason: 'SAFETY_CONTACT_DUPLICATE' } });
+
+    for (let i = existing.length; i < maxSafetyContacts; i += 1) {
+      await repos.users.upsertSafetyContact(userId, {
+        name: `Contact ${i}`,
+        phone: `+23769900000${i}`,
+        relation: ' ',
+      });
+    }
+    await expect(
+      repos.users.upsertSafetyContact(userId, {
+        name: 'De trop',
+        phone: '+237699000099',
+        relation: null,
+      }),
+    ).rejects.toMatchObject({
+      code: 'QUOTA_EXCEEDED',
+      details: { reason: 'SAFETY_CONTACTS_LIMIT' },
+    });
+
+    const updated = await repos.users.upsertSafetyContact(userId, {
+      ...existing[0]!,
+      relation: 'Cousin',
+    });
+    expect(updated).toMatchObject({ id: existing[0]!.id, relation: 'Cousin' });
+
+    await repos.users.removeSafetyContact(userId, existing[0]!.id);
+    expect(await repos.users.listSafetyContacts(userId)).toHaveLength(maxSafetyContacts - 1);
+    await expectCode(repos.users.removeSafetyContact(userId, existing[0]!.id), 'NOT_FOUND');
+    await expectCode(
+      repos.users.removeSafetyContact(DEMO_USER_IDS.driver, existing[1]!.id),
+      'NOT_FOUND',
+    );
+  });
+
+  it('submits one pending profile request at a time and collects its documents', async () => {
+    const { repos } = setup();
+    const userId = DEMO_USER_IDS.citizen;
+    const agencyId = (await repos.agencies.list())[0]!.id;
+
+    await expect(
+      repos.profileRequests.submit(userId, {
+        requestedRole: 'DRIVER',
+        agencyId: 'agency-unknown',
+        organization: null,
+        position: null,
+      }),
+    ).rejects.toMatchObject({
+      code: 'VALIDATION_FAILED',
+      details: { fields: { agencyId: 'INVALID' } },
+    });
+
+    const request = await repos.profileRequests.submit(userId, {
+      requestedRole: 'DRIVER',
+      agencyId,
+      organization: 'ignorée',
+      position: null,
+    });
+    expect(request).toMatchObject({ status: 'PENDING', agencyId, organization: null });
+    expect((await repos.users.getById(userId)).role).toBe('CITIZEN');
+
+    await expect(
+      repos.profileRequests.submit(userId, {
+        requestedRole: 'AUTHORITY',
+        agencyId: null,
+        organization: 'Police',
+        position: 'Agent',
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLICT', details: { reason: 'PROFILE_REQUEST_PENDING' } });
+
+    await repos.profileRequests.uploadDocument(request.id, { type: 'ID_CARD', fileUrl: 'a.jpg' });
+    await repos.profileRequests.uploadDocument(request.id, { type: 'ID_CARD', fileUrl: 'b.jpg' });
+    await expect(
+      repos.profileRequests.uploadDocument(request.id, {
+        type: 'FUNCTION_PROOF',
+        fileUrl: 'c.jpg',
+      }),
+    ).rejects.toMatchObject({
+      code: 'VALIDATION_FAILED',
+      details: { fields: { type: 'INVALID' } },
+    });
+    const documents = await repos.profileRequests.listDocuments(request.id);
+    expect(documents).toEqual([expect.objectContaining({ type: 'ID_CARD', fileUrl: 'b.jpg' })]);
+  });
+
+  it('applies the profile request rules to granted, rejected and suspended accounts', async () => {
+    const { repos } = setup();
+    const authority = {
+      requestedRole: 'AUTHORITY' as const,
+      agencyId: null,
+      organization: 'Mairie',
+      position: 'Agent',
+    };
+
+    await expect(
+      repos.profileRequests.submit(DEMO_USER_IDS.driver, authority),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN', details: { reason: 'PROFILE_ALREADY_GRANTED' } });
+    await expectCode(
+      repos.profileRequests.submit(DEMO_USER_IDS.suspended, authority),
+      'ACCOUNT_SUSPENDED',
+    );
+    await expect(repos.profileRequests.submit('user-106', authority)).resolves.toMatchObject({
+      status: 'PENDING',
+    });
+
+    const reviewed = await repos.profileRequests.getForUser(DEMO_USER_IDS.driver);
+    await expect(
+      repos.profileRequests.uploadDocument(reviewed!.id, { type: 'ID_CARD', fileUrl: 'a.jpg' }),
+    ).rejects.toMatchObject({ code: 'CONFLICT', details: { reason: 'PROFILE_REQUEST_CLOSED' } });
+  });
+});

@@ -28,6 +28,17 @@
       "themeColor": "#0B5CAD",
       "backgroundColor": "#F8FAFC"
     },
-    "plugins": ["expo-router", "expo-font"]
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "WakaSafe utilise vos photos pour votre photo de profil et vos justificatifs.",
+          "cameraPermission": "WakaSafe utilise l’appareil photo pour votre photo de profil et vos justificatifs.",
+          "microphonePermission": false
+        }
+      ]
+    ]
   }
 }

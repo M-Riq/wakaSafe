@@ -4,5 +4,6 @@ import { useSessionStore } from '@/features/accounts';
 
 export default function Index() {
   const signedIn = useSessionStore((state) => state.status === 'signedIn');
-  return <Redirect href={signedIn ? '/map' : '/welcome'} />;
+  const landing = useSessionStore((state) => state.landing);
+  return <Redirect href={signedIn ? (landing ?? '/map') : '/welcome'} />;
 }

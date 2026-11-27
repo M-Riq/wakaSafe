@@ -7,7 +7,7 @@ import { DataProvider } from '@/data';
 import { useSessionBootstrap } from '@/features/accounts';
 import { fr } from '@/lib/i18n';
 import { createQueryClient } from '@/lib/query-client';
-import { colors, headerOptions, LoadingView } from '@/ui';
+import { colors, LoadingView, stackHeaderOptions } from '@/ui';
 
 export default function RootLayout() {
   const [queryClient] = useState(createQueryClient);
@@ -28,7 +28,10 @@ function RootNavigator() {
 
   return (
     <Stack
-      screenOptions={{ ...headerOptions, contentStyle: { backgroundColor: colors.background } }}
+      screenOptions={{
+        ...stackHeaderOptions,
+        contentStyle: { backgroundColor: colors.background },
+      }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Protected guard={!signedIn}>
@@ -37,6 +40,8 @@ function RootNavigator() {
       <Stack.Protected guard={signedIn}>
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
       </Stack.Protected>
+      {/* Readable before and after sign-in (link from the registration form). */}
+      <Stack.Screen name="terms" options={{ title: fr.terms.title }} />
       <Stack.Screen name="+not-found" options={{ title: fr.notFound.title }} />
     </Stack>
   );

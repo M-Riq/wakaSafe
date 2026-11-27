@@ -25,6 +25,8 @@ export const sizes = {
   iconMd: 24,
   iconLg: 32,
   borderWidth: 1,
+  /** Outline of selection controls (checkbox, radio button). */
+  borderWidthStrong: 2,
   /** Max width of reading content on large screens (web). */
   contentMaxWidth: 720,
   /** Max width of wide layouts such as dashboards (web). */

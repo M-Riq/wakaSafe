@@ -20,6 +20,7 @@ export function createSeed(now: Date): MockDatabase {
     version: MOCK_DATABASE_VERSION,
     seededAt: now.toISOString(),
     ...people,
+    passwordResets: [],
     reports: reports.reports,
     reportValidations: reports.reportValidations,
     moderationItems: reports.moderationItems,

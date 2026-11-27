@@ -6,11 +6,11 @@ Légende des statuts : ⬜ à faire · 🟡 en cours · ✅ fait · ⏸️ optio
 
 | Réf.      | Exigence (résumé)                                                                      | App                            | Phase  | Contrat de données                                   | Statut |
 | --------- | -------------------------------------------------------------------------------------- | ------------------------------ | ------ | ---------------------------------------------------- | ------ |
-| F1.1      | Inscription (nom, prénom, téléphone, mot de passe, photo facultative, profil souhaité) | client                         | 2      | `AuthRepository`, `ProfileRequestRepository`         | ⬜     |
-| F1.2      | Connexion téléphone + mot de passe, réinitialisation                                   | client                         | 2      | `AuthRepository`                                     | ⬜     |
+| F1.1      | Inscription (nom, prénom, téléphone, mot de passe, photo facultative, profil souhaité) | client                         | 2      | `AuthRepository`, `ProfileRequestRepository`         | ✅     |
+| F1.2      | Connexion téléphone + mot de passe, réinitialisation                                   | client                         | 2      | `AuthRepository`                                     | ✅     |
 | F1.3      | Citoyen actif immédiatement, Conducteur/Autorité en attente + notification             | client                         | 2 (+7) | `ProfileRequestRepository`, `NotificationRepository` | 🟡     |
-| F1.4      | Téléversement des justificatifs                                                        | client                         | 2      | `ProfileRequestRepository`                           | ⬜     |
-| F1.5      | Profil, préférences, contacts de sécurité                                              | client                         | 2      | `UserRepository`                                     | ⬜     |
+| F1.4      | Téléversement des justificatifs                                                        | client                         | 2      | `ProfileRequestRepository`                           | ✅     |
+| F1.5      | Profil, préférences, contacts de sécurité                                              | client                         | 2      | `UserRepository`                                     | ✅     |
 | F2.1      | 10 catégories de signalement                                                           | client                         | 3      | `domain` (`ReportCategory`)                          | ⬜     |
 | F2.2      | Contenu d'un signalement (GPS auto, photo optionnelle…)                                | client                         | 3      | `ReportRepository`                                   | ⬜     |
 | F2.3      | Carte publique, filtres type/gravité/zone                                              | client                         | 3      | `ReportRepository.list`                              | ⬜     |
@@ -57,3 +57,17 @@ La phase 1 ne livre aucune exigence fonctionnelle complète. Elle pose le socle 
 | Normalisation et affichage des numéros camerounais                                                                                                                                                                 | F1.1, F1.2            |
 
 F1.3 est **en cours** : la règle « demande en attente = droits Citoyen » est appliquée et testée. Le dépôt de la demande (phase 2) et la notification (phase 7) restent à faire.
+
+## Couverture de la phase 2 (M1 comptes et profils)
+
+Côté client, avec les données mock. La validation des demandes se fait dans le back-office (phase 8).
+
+| Exigence | Livré                                                                                                                                                                                    | Tests                                                                                                |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| F1.1     | Inscription en étapes : nom, prénom, téléphone, mot de passe, photo facultative, acceptation des conditions, profil souhaité (agence du Conducteur, organisme et fonction de l'Autorité) | `account-flows.test.tsx` (registration), `domain.test.ts` (account inputs), `mock-data.test.ts` (M1) |
+| F1.2     | Connexion par téléphone (format libre) et mot de passe ; mot de passe oublié avec un code à 6 chiffres, affiché à l'écran en démo                                                        | `account-flows.test.tsx` (sign-in, password reset), `domain.test.ts`, `mock-data.test.ts`            |
+| F1.3     | Citoyen actif dès l'inscription ; demande Conducteur ou Autorité « en attente » avec droits Citoyen ; nouvelle demande possible après un refus                                           | `account-flows.test.tsx` (registration, profile management), `domain.test.ts` (capabilities)         |
+| F1.4     | Justificatifs (pièce d'identité, permis, justificatif de fonction) à l'inscription ou plus tard depuis le profil ; photos compressées ; justificatifs figés une fois la demande traitée  | `account-flows.test.tsx` (registration, profile management), `mock-data.test.ts`                     |
+| F1.5     | Modification du profil et de la photo (téléphone non modifiable), préférences de notification et rayon d'alerte, jusqu'à 5 contacts de sécurité                                          | `account-flows.test.tsx` (profile management), `mock-data.test.ts`                                   |
+
+F1.3 reste **en cours** : la notification de la décision arrive en phase 7 (centre de notifications), et la décision elle-même en phase 8 (back-office).

@@ -6,6 +6,17 @@ import type { PointReason } from '../entities/points';
  * Every value marked "provisional" must be validated by GOSAFE before production.
  */
 export const BUSINESS_RULES = {
+  accounts: {
+    /** F1.1, F1.2 — provisional: at least N characters, with at least one letter and one digit. */
+    passwordMinLength: 8,
+    /** F1.2 — provisional: numeric code sent by SMS (displayed on screen in the demo). */
+    resetCodeLength: 6,
+    resetCodeValidityMinutes: 10,
+    /** The code is invalidated after N wrong attempts. */
+    resetCodeMaxAttempts: 5,
+    /** F1.5 — provisional. */
+    maxSafetyContacts: 5,
+  },
   reports: {
     /** F2.4 — provisional. */
     validationThreshold: 3,

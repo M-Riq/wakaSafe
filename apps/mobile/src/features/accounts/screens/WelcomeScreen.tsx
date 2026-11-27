@@ -6,13 +6,12 @@ import {
   AppText,
   Badge,
   Banner,
+  BrandLogo,
   Button,
   Card,
   colors,
   Icon,
-  radii,
   Screen,
-  sizes,
   spacing,
 } from '@/ui';
 
@@ -21,9 +20,7 @@ export function WelcomeScreen() {
   return (
     <Screen testID="welcome">
       <View style={styles.hero}>
-        <View style={styles.logo}>
-          <Icon name="shield-checkmark" size={sizes.iconLg + spacing.lg} color={colors.onPrimary} />
-        </View>
+        <BrandLogo />
         <View style={styles.brand}>
           <AppText variant="display">{fr.common.appName}</AppText>
           <Badge label={fr.common.demoBadge} tone="warning" />
@@ -44,12 +41,28 @@ export function WelcomeScreen() {
           ))}
         </View>
       </Card>
-      <Button
-        label={fr.welcome.tryDemo}
-        icon="log-in-outline"
-        onPress={() => router.push('/demo-access')}
-        testID="welcome-try-demo"
-      />
+      <View style={styles.actions}>
+        <Button
+          label={fr.welcome.signIn}
+          icon="log-in-outline"
+          onPress={() => router.push('/login')}
+          testID="welcome-sign-in"
+        />
+        <Button
+          label={fr.welcome.register}
+          variant="secondary"
+          icon="person-add-outline"
+          onPress={() => router.push('/register')}
+          testID="welcome-register"
+        />
+        <Button
+          label={fr.welcome.tryDemo}
+          variant="ghost"
+          icon="people-outline"
+          onPress={() => router.push('/demo-access')}
+          testID="welcome-try-demo"
+        />
+      </View>
       <Banner tone="info" title={fr.common.placeholderContent}>
         {fr.welcome.demoNotice}
       </Banner>
@@ -59,17 +72,10 @@ export function WelcomeScreen() {
 
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', gap: spacing.md, paddingTop: spacing.xl },
-  logo: {
-    width: sizes.touchTarget * 2,
-    height: sizes.touchTarget * 2,
-    borderRadius: radii.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-  },
   brand: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   centered: { textAlign: 'center' },
   features: { gap: spacing.md },
   feature: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   featureText: { flex: 1 },
+  actions: { gap: spacing.sm },
 });

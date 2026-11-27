@@ -1,6 +1,6 @@
 # ADR-0006 : Cartographie OpenStreetMap derrière un composant `AppMap`
 
-- Statut : **Proposé**
+- Statut : **Accepté**
 - Date : 2026-11-18
 - Décideur : Mbassi Rick Bryan (responsable du projet)
 

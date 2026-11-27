@@ -2,7 +2,7 @@
 
 **Application citoyenne de prévention et de sécurité routière au Cameroun**, portée par l'**Association GOSAFE**.
 
-> Statut : **phase 1 — fondations de l'app client** (monorepo, packages partagés, coquille de l'app Expo, CI). La phase 0 (cadrage et architecture) est terminée.
+> Statut : **phase 2 — comptes et profils** (inscription, connexion, réinitialisation, profil, demandes Conducteur et Autorité, justificatifs, contacts de sécurité). Les phases 0 (cadrage et architecture) et 1 (fondations de l'app client) sont terminées.
 > Avancement détaillé : [ROADMAP.md](ROADMAP.md).
 
 ## Sommaire
@@ -584,29 +584,37 @@ sequenceDiagram
     autonumber
     actor U as Utilisateur (futur Conducteur)
     participant APP as App client (UI)
+    participant MED as MediaService
     participant ACC as features/accounts
     participant DOM as domain (schémas Zod)
     participant AUTH as AuthRepository
     participant PR as ProfileRequestRepository
 
-    U->>APP: Remplit le formulaire (nom, prénom, téléphone, mot de passe, photo facultative)
-    U->>APP: Choisit le profil « Conducteur d'agence » et son agence affiliée
-    APP->>ACC: register(form)
-    ACC->>DOM: RegistrationSchema.parse(form)
+    U->>APP: Étape 1 : nom, prénom, téléphone, mot de passe, photo facultative, CGU
+    APP->>DOM: RegisterInputSchema (validation locale)
+    U->>APP: Étape 2 : profil « Conducteur d'agence » et agence affiliée
+    APP->>DOM: ProfileRequestSubmissionSchema (validation locale)
     alt Données invalides
-        DOM-->>ACC: erreurs de validation
-        ACC-->>APP: messages d'erreur par champ
+        DOM-->>APP: codes de validation par champ
+        APP-->>U: messages d'erreur sous les champs
     else Données valides
+        U->>APP: Étape 3 (facultative) : photos de la pièce d'identité et du permis
+        APP->>MED: pickImage(document)
+        MED-->>APP: image compressée
+        APP->>ACC: register(compte, demande, justificatifs)
         ACC->>AUTH: register(identité, mot de passe)
-        AUTH-->>ACC: session + User(role=CITIZEN, status=ACTIVE)
-        ACC->>PR: submit(requestedRole=DRIVER, agencyId)
-        PR-->>ACC: ProfileRequest(status=PENDING)
-        U->>APP: Téléverse pièce d'identité et permis
-        APP->>ACC: uploadDocuments(files)
-        ACC->>PR: uploadDocument(ID_CARD), uploadDocument(DRIVING_LICENSE)
-        PR-->>ACC: justificatifs enregistrés
-        ACC-->>APP: écran « Demande en attente de validation »
-        Note over U,APP: En attendant, l'utilisateur a les droits Citoyen (ADR-0009)
+        alt Numéro déjà utilisé
+            AUTH-->>ACC: CONFLICT (PHONE_TAKEN)
+            ACC-->>APP: retour à l'étape 1, erreur sur le téléphone
+        else Compte créé
+            AUTH-->>ACC: session + User(role=CITIZEN, status=ACTIVE)
+            ACC->>PR: submit(requestedRole=DRIVER, agencyId)
+            PR-->>ACC: ProfileRequest(status=PENDING)
+            ACC->>PR: uploadDocument(ID_CARD), uploadDocument(DRIVING_LICENSE)
+            PR-->>ACC: justificatifs enregistrés
+            ACC-->>APP: profil avec « Demande en attente de validation »
+            Note over U,APP: Droits Citoyen en attendant (ADR-0009). Les justificatifs manquants se complètent depuis le profil.
+        end
     end
     Note over ACC,PR: La suite (décision de l'administrateur et notification) est détaillée en 5.7
 ```
@@ -1419,8 +1427,8 @@ Contraintes d'intégrité et points à adapter selon le SGBD (géolocalisation P
 | Phase | Contenu                                                                        | Statut         |
 | ----- | ------------------------------------------------------------------------------ | -------------- |
 | 0     | Cadrage, architecture, documentation                                           | ✅ Terminée    |
-| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI | 🔵 En revue    |
-| 2     | M1 Comptes et profils                                                          | ⬜             |
+| 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI | ✅ Terminée    |
+| 2     | M1 Comptes et profils                                                          | 🔵 En revue    |
 | 3     | M2 Signalements et carte                                                       | ⬜             |
 | 4     | M3 Mode hors ligne                                                             | ⬜             |
 | 5     | M5 Quiz, points, classements                                                   | ⬜             |
@@ -1447,7 +1455,7 @@ Détails : [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 10. Application client (`apps/mobile`)
 
-> Phase 1 : coquille de l'app (accueil, choix d'un profil de démo, onglets, profil, espace Conducteur). Les écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)). L'app n'affiche aucune information sur les phases ni sur l'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
+> Disponible : accueil, connexion, inscription (Citoyen, Conducteur ou Autorité), mot de passe oublié, profil (modification, photo, préférences, contacts de sécurité, demande de profil, justificatifs), onglets et espace Conducteur. Les autres écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)). L'app n'affiche aucune information sur les phases ni sur l'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
 
 **Prérequis** : Node.js 24 LTS (fixé dans `.nvmrc` ; Node 26 fonctionne aussi), npm 10 ou plus. Pour Android : un téléphone Android 8+ avec Expo Go, ou un émulateur (Android Studio).
 
@@ -1474,7 +1482,7 @@ Variables d'environnement (facultatives) : copier [`.env.example`](.env.example)
 
 **URL de démonstration** : **<https://wakasafe-client.vercel.app>** (version de `main`, active dès la fusion de la phase 1). Chaque PR reçoit en plus sa propre URL de prévisualisation (voir [section 13](#13-déploiement-de-la-démo)).
 
-**Comptes de démonstration** (fictifs, données mock). En phase 1, on y accède par l'écran **« Choisir un profil de démo »**, sans saisie. La connexion par téléphone et mot de passe arrive en phase 2.
+**Comptes de démonstration** (fictifs, données mock). On s'y connecte avec l'écran **« Se connecter »** (téléphone et mot de passe), ou en un geste depuis le lien **« Essayer un profil de démonstration »** de l'accueil. On peut aussi créer son propre compte : il reste sur l'appareil.
 
 | Profil                | Téléphone         | Mot de passe    | Particularité                                                             |
 | --------------------- | ----------------- | --------------- | ------------------------------------------------------------------------- |
@@ -1485,6 +1493,13 @@ Variables d'environnement (facultatives) : copier [`.env.example`](.env.example)
 | Compte suspendu       | +237 600 00 01 05 | `demo-wakasafe` | Hervé Nkoulou : suspension temporaire, lecture seule                      |
 
 Les numéros, noms et agences de démonstration sont **fictifs**. Aucune agence réelle n'est évaluée avec des données inventées. Le mot de passe de démonstration est public et ne protège aucune donnée réelle.
+
+**Particularités de la démo pour les comptes** :
+
+- Mot de passe oublié : aucun SMS n'est envoyé, le code à 6 chiffres s'affiche à l'écran. Il est valable 10 minutes, avec 5 essais au plus.
+- Les photos (profil et justificatifs) sont compressées puis enregistrées sur l'appareil, avec les autres données de démo.
+- Les conditions d'utilisation affichées sont un texte provisoire, en attendant le texte de GOSAFE.
+- Une demande Conducteur ou Autorité reste « en attente » dans l'app : sa validation se fait dans le back-office (phase 8), qui ne partage pas ses données avec l'app en démo (voir [section 13](#13-déploiement-de-la-démo)).
 
 ## 11. Back-office (`apps/admin`)
 
@@ -1558,18 +1573,19 @@ Les deux apps sont servies sur **deux URL différentes**, et chacune stocke ses 
 
 ## 14. Décisions d'architecture (ADR)
 
-| N°                                                             | Décision                                                   | Statut  |
-| -------------------------------------------------------------- | ---------------------------------------------------------- | ------- |
-| [0001](docs/adr/0001-two-web-applications.md)                  | Deux applications web : client Expo et back-office Next.js | Accepté |
-| [0002](docs/adr/0002-monorepo-npm-workspaces.md)               | Monorepo avec npm workspaces                               | Accepté |
-| [0003](docs/adr/0003-client-app-stack.md)                      | Stack de l'application client                              | Proposé |
-| [0004](docs/adr/0004-admin-app-stack.md)                       | Stack du back-office                                       | Proposé |
-| [0005](docs/adr/0005-data-access-abstraction.md)               | Abstraction des données et mocks                           | Proposé |
-| [0006](docs/adr/0006-maps-openstreetmap.md)                    | Cartographie OSM et composant `AppMap`                     | Proposé |
-| [0007](docs/adr/0007-notifications-in-app-first.md)            | Notifications in-app d'abord, FCM plus tard                | Accepté |
-| [0008](docs/adr/0008-demo-hosting-vercel.md)                   | Hébergement de la démo sur Vercel                          | Accepté |
-| [0009](docs/adr/0009-profile-requests-and-authority-access.md) | Demandes de profil et accès Autorité au back-office        | Accepté |
-| [0010](docs/adr/0010-confidential-source-documents.md)         | Documents sources confidentiels hors du dépôt              | Accepté |
+| N°                                                              | Décision                                                   | Statut  |
+| --------------------------------------------------------------- | ---------------------------------------------------------- | ------- |
+| [0001](docs/adr/0001-two-web-applications.md)                   | Deux applications web : client Expo et back-office Next.js | Accepté |
+| [0002](docs/adr/0002-monorepo-npm-workspaces.md)                | Monorepo avec npm workspaces                               | Accepté |
+| [0003](docs/adr/0003-client-app-stack.md)                       | Stack de l'application client                              | Accepté |
+| [0004](docs/adr/0004-admin-app-stack.md)                        | Stack du back-office                                       | Accepté |
+| [0005](docs/adr/0005-data-access-abstraction.md)                | Abstraction des données et mocks                           | Accepté |
+| [0006](docs/adr/0006-maps-openstreetmap.md)                     | Cartographie OSM et composant `AppMap`                     | Accepté |
+| [0007](docs/adr/0007-notifications-in-app-first.md)             | Notifications in-app d'abord, FCM plus tard                | Accepté |
+| [0008](docs/adr/0008-demo-hosting-vercel.md)                    | Hébergement de la démo sur Vercel                          | Accepté |
+| [0009](docs/adr/0009-profile-requests-and-authority-access.md)  | Demandes de profil et accès Autorité au back-office        | Accepté |
+| [0010](docs/adr/0010-confidential-source-documents.md)          | Documents sources confidentiels hors du dépôt              | Accepté |
+| [0011](docs/adr/0011-provisional-theme-and-brand-guidelines.md) | Thème provisoire et passage à la charte GOSAFE             | Accepté |
 
 ## 15. Hypothèses et points ouverts
 
@@ -1577,7 +1593,7 @@ Les deux apps sont servies sur **deux URL différentes**, et chacune stocke ses 
 
 - Les paramètres métier (seuils de validation, quotas, barème de points, période anti-abus, rayon d'alerte…) sont **provisoires et configurables** : [business-rules.md](docs/architecture/business-rules.md).
 - Les questions de quiz de démonstration sont marquées **« Contenu provisoire, à remplacer par le contenu GOSAFE »**.
-- Le thème graphique est **neutre**, modifiable à un seul endroit (`packages/design-tokens`), en attendant la charte GOSAFE.
+- Le thème graphique est **neutre et provisoire**, modifiable à un seul endroit (`packages/design-tokens`), en attendant la charte GOSAFE. La procédure de changement de charte est décrite dans l'[ADR-0011](docs/adr/0011-provisional-theme-and-brand-guidelines.md).
 - Nom affiché : **WakaSafe**.
 
 **Points ouverts** :

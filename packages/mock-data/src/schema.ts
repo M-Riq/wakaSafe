@@ -23,7 +23,8 @@ import {
   UserSchema,
 } from '@wakasafe/domain';
 
-export const MOCK_DATABASE_VERSION = 1;
+/** Bumped on every incompatible change: an older stored demo is replaced by a fresh seed. */
+export const MOCK_DATABASE_VERSION = 2;
 
 export const CredentialSchema = z.object({
   userId: IdSchema,
@@ -32,12 +33,23 @@ export const CredentialSchema = z.object({
 });
 export type Credential = z.infer<typeof CredentialSchema>;
 
+/** Pending password reset (F1.2). One per user; the code itself is never stored. */
+export const PasswordResetSchema = z.object({
+  userId: IdSchema,
+  /** Demo only, see password.ts. */
+  codeHash: z.string().min(1),
+  expiresAt: IsoDateTimeSchema,
+  failedAttempts: z.number().int().nonnegative(),
+});
+export type PasswordReset = z.infer<typeof PasswordResetSchema>;
+
 /** Whole demo dataset, persisted as one JSON document in the local key/value store. */
 export const MockDatabaseSchema = z.object({
   version: z.literal(MOCK_DATABASE_VERSION),
   seededAt: IsoDateTimeSchema,
   users: z.array(UserSchema),
   credentials: z.array(CredentialSchema),
+  passwordResets: z.array(PasswordResetSchema),
   preferences: z.array(PreferencesSchema),
   safetyContacts: z.array(SafetyContactSchema),
   agencies: z.array(AgencySchema),

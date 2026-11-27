@@ -1,6 +1,6 @@
 # ADR-0005 : Abstraction de l'accès aux données et implémentations mock
 
-- Statut : **Proposé**
+- Statut : **Accepté**
 - Date : 2026-11-18
 - Décideur : Mbassi Rick Bryan (responsable du projet)
 

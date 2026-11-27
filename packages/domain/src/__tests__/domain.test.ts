@@ -1,14 +1,21 @@
 import {
+  collectFieldErrors,
   formatCameroonPhone,
   getClientCapabilities,
   isAccountSuspended,
   localDayKey,
+  LoginInputSchema,
   monthKey,
   normalizeCameroonPhone,
+  PasswordSchema,
+  PhoneInputSchema,
   PointEntrySchema,
+  ProfileRequestSubmissionSchema,
   QuestionSchema,
   ratingAverage,
   ratingPeriodKey,
+  RegisterInputSchema,
+  validateInput,
   yearKey,
 } from '../index';
 
@@ -89,6 +96,26 @@ describe('getClientCapabilities', () => {
     expect(caps.canReport).toBe(true);
     expect(caps.canAccessDriverArea).toBe(false);
     expect(caps.pendingRequestRole).toBe('DRIVER');
+    expect(caps.canRequestProfile).toBe(false);
+  });
+
+  it('lets an active citizen request a profile, again after a rejection', () => {
+    const citizen = { ...active, role: 'CITIZEN' as const };
+    const request = (latestRequest: Parameters<typeof getClientCapabilities>[0]['latestRequest']) =>
+      getClientCapabilities({ user: citizen, latestRequest, now }).canRequestProfile;
+    expect(request(null)).toBe(true);
+    expect(request({ requestedRole: 'DRIVER', status: 'REJECTED' })).toBe(true);
+    expect(
+      getClientCapabilities({
+        user: { ...citizen, status: 'SUSPENDED', suspendedUntil: null },
+        latestRequest: null,
+        now,
+      }).canRequestProfile,
+    ).toBe(false);
+    expect(
+      getClientCapabilities({ user: { ...active, role: 'DRIVER' }, latestRequest: null, now })
+        .canRequestProfile,
+    ).toBe(false);
   });
 
   it('opens the driver area to validated drivers only', () => {
@@ -122,6 +149,88 @@ describe('getClientCapabilities', () => {
     });
     expect(caps.canUseClientApp).toBe(false);
     expect(caps.canReport).toBe(false);
+  });
+});
+
+describe('account inputs (M1)', () => {
+  function firstError(schema: Parameters<typeof validateInput>[0], input: unknown) {
+    const result = schema.safeParse(input);
+    return result.success ? null : collectFieldErrors(result.error);
+  }
+
+  it.each([
+    ['', 'REQUIRED'],
+    ['abc1', 'PASSWORD_TOO_SHORT'],
+    ['12345678', 'PASSWORD_NEEDS_LETTER'],
+    ['motdepasse', 'PASSWORD_NEEDS_DIGIT'],
+    ['x'.repeat(72) + '1', 'PASSWORD_TOO_LONG'],
+  ])('rejects the password "%s" with %s', (password, code) => {
+    expect(firstError(PasswordSchema, password)).toEqual({ _form: code });
+  });
+
+  it('accepts a password with a letter and a digit, accents included', () => {
+    expect(PasswordSchema.safeParse('sécurité2026').success).toBe(true);
+  });
+
+  it('normalises the phone input and reports blank or invalid numbers', () => {
+    expect(PhoneInputSchema.parse('6 99 12 34 56')).toBe('+237699123456');
+    expect(firstError(PhoneInputSchema, ' ')).toEqual({ _form: 'REQUIRED' });
+    expect(firstError(PhoneInputSchema, '0612')).toEqual({ _form: 'PHONE_INVALID' });
+  });
+
+  it('signs in without applying the password policy', () => {
+    expect(LoginInputSchema.parse({ phone: '600 00 00 01', password: 'demo-wakasafe' })).toEqual({
+      phone: '+237600000001',
+      password: 'demo-wakasafe',
+    });
+    expect(firstError(LoginInputSchema, { phone: '', password: '' })).toEqual({
+      phone: 'REQUIRED',
+      password: 'REQUIRED',
+    });
+  });
+
+  it('reports the first error of each registration field', () => {
+    expect(
+      firstError(RegisterInputSchema, {
+        firstName: '  ',
+        lastName: 'Atangana',
+        phone: '12',
+        password: 'court',
+        photoUrl: null,
+      }),
+    ).toEqual({ firstName: 'REQUIRED', phone: 'PHONE_INVALID', password: 'PASSWORD_TOO_SHORT' });
+  });
+
+  it('requires the agency of a Driver and the function of an Authority', () => {
+    const base = { agencyId: null, organization: ' ', position: null };
+    expect(
+      firstError(ProfileRequestSubmissionSchema, { ...base, requestedRole: 'DRIVER' }),
+    ).toEqual({ agencyId: 'REQUIRED' });
+    expect(
+      firstError(ProfileRequestSubmissionSchema, { ...base, requestedRole: 'AUTHORITY' }),
+    ).toEqual({ organization: 'REQUIRED', position: 'REQUIRED' });
+    expect(
+      ProfileRequestSubmissionSchema.parse({
+        requestedRole: 'DRIVER',
+        agencyId: 'agency-1',
+        organization: 'ignored',
+        position: 'ignored',
+      }),
+    ).toEqual({
+      requestedRole: 'DRIVER',
+      agencyId: 'agency-1',
+      organization: null,
+      position: null,
+    });
+  });
+
+  it('throws a VALIDATION_FAILED domain error with the field errors', () => {
+    expect(() => validateInput(PhoneInputSchema, 'abc')).toThrow(
+      expect.objectContaining({
+        code: 'VALIDATION_FAILED',
+        details: { fields: { _form: 'PHONE_INVALID' } },
+      }),
+    );
   });
 });
 

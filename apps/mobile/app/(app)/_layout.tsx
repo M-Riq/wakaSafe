@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 import { useCapabilities, useSessionStore } from '@/features/accounts';
 import { fr } from '@/lib/i18n';
-import { colors, headerOptions } from '@/ui';
+import { colors, stackHeaderOptions } from '@/ui';
 
 // Deep links (e.g. /driver after a refresh) keep the tabs underneath, so "back" works.
 export const unstable_settings = { anchor: '(tabs)' };
@@ -18,9 +18,17 @@ function SignedInNavigator() {
   const { canAccessDriverArea } = useCapabilities();
   return (
     <Stack
-      screenOptions={{ ...headerOptions, contentStyle: { backgroundColor: colors.background } }}
+      screenOptions={{
+        ...stackHeaderOptions,
+        contentStyle: { backgroundColor: colors.background },
+      }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="profile/edit" options={{ title: fr.editProfile.title }} />
+      <Stack.Screen name="profile/preferences" options={{ title: fr.preferences.title }} />
+      <Stack.Screen name="profile/safety-contacts" options={{ title: fr.safetyContacts.title }} />
+      <Stack.Screen name="profile/request" options={{ title: fr.profileRequest.title }} />
+      <Stack.Screen name="profile/documents" options={{ title: fr.documents.title }} />
       <Stack.Protected guard={canAccessDriverArea}>
         <Stack.Screen name="driver" options={{ title: fr.driver.title }} />
       </Stack.Protected>

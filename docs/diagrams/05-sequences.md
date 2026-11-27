@@ -11,29 +11,37 @@ sequenceDiagram
     autonumber
     actor U as Utilisateur (futur Conducteur)
     participant APP as App client (UI)
+    participant MED as MediaService
     participant ACC as features/accounts
     participant DOM as domain (schémas Zod)
     participant AUTH as AuthRepository
     participant PR as ProfileRequestRepository
 
-    U->>APP: Remplit le formulaire (nom, prénom, téléphone, mot de passe, photo facultative)
-    U->>APP: Choisit le profil « Conducteur d'agence » et son agence affiliée
-    APP->>ACC: register(form)
-    ACC->>DOM: RegistrationSchema.parse(form)
+    U->>APP: Étape 1 : nom, prénom, téléphone, mot de passe, photo facultative, CGU
+    APP->>DOM: RegisterInputSchema (validation locale)
+    U->>APP: Étape 2 : profil « Conducteur d'agence » et agence affiliée
+    APP->>DOM: ProfileRequestSubmissionSchema (validation locale)
     alt Données invalides
-        DOM-->>ACC: erreurs de validation
-        ACC-->>APP: messages d'erreur par champ
+        DOM-->>APP: codes de validation par champ
+        APP-->>U: messages d'erreur sous les champs
     else Données valides
+        U->>APP: Étape 3 (facultative) : photos de la pièce d'identité et du permis
+        APP->>MED: pickImage(document)
+        MED-->>APP: image compressée
+        APP->>ACC: register(compte, demande, justificatifs)
         ACC->>AUTH: register(identité, mot de passe)
-        AUTH-->>ACC: session + User(role=CITIZEN, status=ACTIVE)
-        ACC->>PR: submit(requestedRole=DRIVER, agencyId)
-        PR-->>ACC: ProfileRequest(status=PENDING)
-        U->>APP: Téléverse pièce d'identité et permis
-        APP->>ACC: uploadDocuments(files)
-        ACC->>PR: uploadDocument(ID_CARD), uploadDocument(DRIVING_LICENSE)
-        PR-->>ACC: justificatifs enregistrés
-        ACC-->>APP: écran « Demande en attente de validation »
-        Note over U,APP: En attendant, l'utilisateur a les droits Citoyen (ADR-0009)
+        alt Numéro déjà utilisé
+            AUTH-->>ACC: CONFLICT (PHONE_TAKEN)
+            ACC-->>APP: retour à l'étape 1, erreur sur le téléphone
+        else Compte créé
+            AUTH-->>ACC: session + User(role=CITIZEN, status=ACTIVE)
+            ACC->>PR: submit(requestedRole=DRIVER, agencyId)
+            PR-->>ACC: ProfileRequest(status=PENDING)
+            ACC->>PR: uploadDocument(ID_CARD), uploadDocument(DRIVING_LICENSE)
+            PR-->>ACC: justificatifs enregistrés
+            ACC-->>APP: profil avec « Demande en attente de validation »
+            Note over U,APP: Droits Citoyen en attendant (ADR-0009). Les justificatifs manquants se complètent depuis le profil.
+        end
     end
     Note over ACC,PR: La suite (décision de l'administrateur et notification) est détaillée en 5.7
 ```
