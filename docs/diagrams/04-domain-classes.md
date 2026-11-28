@@ -88,6 +88,7 @@ classDiagram
         +ReportOrigin origin
         +number confirmations
         +number refutations
+        +DateTime validatedAt [0..1]
         +string handledBy [0..1]
     }
     class ReportValidation {

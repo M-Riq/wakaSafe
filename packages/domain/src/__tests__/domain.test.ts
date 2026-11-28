@@ -1,11 +1,16 @@
 import {
+  automaticSuspensionEnd,
   collectFieldErrors,
   formatCameroonPhone,
   getClientCapabilities,
+  isAbnormalReportFrequency,
   isAccountSuspended,
+  isOpenToVotes,
+  isPubliclyVisible,
   localDayKey,
   LoginInputSchema,
   monthKey,
+  nearestPilotCity,
   normalizeCameroonPhone,
   PasswordSchema,
   PhoneInputSchema,
@@ -15,6 +20,8 @@ import {
   ratingAverage,
   ratingPeriodKey,
   RegisterInputSchema,
+  reportQuota,
+  statusAfterVote,
   validateInput,
   yearKey,
 } from '../index';
@@ -268,5 +275,69 @@ describe('domain schemas', () => {
     expect(
       ratingAverage({ courtesy: 5, punctuality: 4, safeDriving: 3, vehicleCleanliness: 4 }),
     ).toBe(4);
+  });
+});
+
+describe('report rules (M2)', () => {
+  const now = new Date('2026-05-10T10:00:00.000Z');
+  const minutesAgo = (minutes: number) => new Date(now.getTime() - minutes * 60_000).toISOString();
+  const tally = (confirmations: number, refutations: number, refutationsSinceValidation = 0) => ({
+    confirmations,
+    refutations,
+    refutationsSinceValidation,
+  });
+
+  it('places a point in the zone of the nearest pilot city', () => {
+    expect(nearestPilotCity({ latitude: 3.87, longitude: 11.52 })).toBe('Yaoundé');
+    expect(nearestPilotCity({ latitude: 4.06, longitude: 9.73 })).toBe('Douala');
+    expect(nearestPilotCity({ latitude: 5.2, longitude: 10.2 })).toBe('Bafoussam');
+  });
+
+  it('validates a new report at 3 confirmations and invalidates it when refutations win', () => {
+    expect(statusAfterVote('CREATED', tally(2, 0))).toBe('CREATED');
+    expect(statusAfterVote('CREATED', tally(3, 1))).toBe('VALIDATED');
+    expect(statusAfterVote('CREATED', tally(2, 3))).toBe('INVALIDATED');
+    expect(statusAfterVote('CREATED', tally(2, 2))).toBe('CREATED');
+  });
+
+  it('flags a validated report contested by 3 later refutations', () => {
+    expect(statusAfterVote('VALIDATED', tally(4, 3, 2))).toBe('VALIDATED');
+    expect(statusAfterVote('VALIDATED', tally(4, 3, 3))).toBe('SUSPICIOUS');
+    expect(statusAfterVote('HANDLED', tally(3, 5, 5))).toBe('HANDLED');
+  });
+
+  it('shows and opens to votes only the relevant statuses', () => {
+    expect(isPubliclyVisible('HANDLED')).toBe(true);
+    expect(isPubliclyVisible('SUSPICIOUS')).toBe(false);
+    expect(isOpenToVotes('VALIDATED')).toBe(true);
+    expect(isOpenToVotes('HANDLED')).toBe(false);
+  });
+
+  it('detects more than 5 reports within 10 minutes', () => {
+    const five = [1, 2, 3, 4, 5].map(minutesAgo);
+    expect(isAbnormalReportFrequency(five, now)).toBe(false);
+    expect(isAbnormalReportFrequency([...five, minutesAgo(0)], now)).toBe(true);
+    expect(isAbnormalReportFrequency([...five, minutesAgo(11)], now)).toBe(false);
+  });
+
+  it('counts the report quota over a rolling 24 h window', () => {
+    const tenReports = Array.from({ length: 10 }, (_, i) => minutesAgo(60 * (i + 1)));
+    expect(reportQuota(tenReports.slice(1), now)).toEqual({ remaining: 1, availableAt: null });
+    expect(reportQuota([...tenReports, minutesAgo(60 * 25)], now)).toEqual({
+      remaining: 0,
+      // The oldest report of the window (10 h ago) frees a slot 24 h after it was sent.
+      availableAt: '2026-05-11T00:00:00.000Z',
+    });
+  });
+
+  it('suspends for 72 h after 3 abuse alerts within 7 days', () => {
+    const day = 24 * 60;
+    expect(automaticSuspensionEnd([minutesAgo(day), minutesAgo(2 * day)], now)).toBeNull();
+    expect(
+      automaticSuspensionEnd([minutesAgo(8 * day), minutesAgo(day), minutesAgo(0)], now),
+    ).toBeNull();
+    expect(automaticSuspensionEnd([minutesAgo(6 * day), minutesAgo(day), minutesAgo(0)], now)).toBe(
+      '2026-05-13T10:00:00.000Z',
+    );
   });
 });

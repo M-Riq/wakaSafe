@@ -15,11 +15,17 @@ Le cahier des charges fixe les **règles** mais pas toujours les **valeurs**. Le
 | Fréquence anormale d'un auteur              | F2.5       | plus de 5 signalements en 10 minutes                                                                                       | À valider    |
 | Quota de signalements                       | F2.6       | 10 par 24 h glissantes                                                                                                     | À valider    |
 | Quota de votes (valider/infirmer)           | F2.6       | 30 par 24 h glissantes                                                                                                     | À valider    |
+| Dépassement d'un quota                      | F2.6       | L'action est refusée (sans alerte d'abus) jusqu'à ce qu'une place se libère dans la fenêtre de 24 h                        | À valider    |
+| Alerte d'abus                               | F2.5, F2.6 | Un signalement envoyé en fréquence anormale : il passe « Suspect » et rejoint la file de modération                        | À valider    |
 | Suspension temporaire automatique           | F2.6       | 3 alertes d'abus en 7 jours → suspension 72 h                                                                              | À valider    |
+| Avis sur un signalement                     | F2.4       | Un avis définitif par personne ; aucun avis sur son propre signalement ; avis possibles en attente ou validé seulement     | À valider    |
+| Signalements visibles sur la carte publique | F2.3       | En attente de confirmation, Validé, Pris en charge. Les signalements infirmés, suspects ou clôturés sont masqués           | À valider    |
+| Zone d'un signalement                       | F2.3       | Ville pilote la plus proche de la position (Yaoundé, Douala ou Bafoussam) ; le filtre « zone » choisit une de ces villes   | À valider    |
+| Position sans GPS                           | F2.2       | Choix de la ville (centre-ville) ou point placé sur la carte (web) si la position est refusée ou introuvable               | À valider    |
 | Effet d'une suspension                      | F2.6, F9.3 | Connexion en lecture seule : pas de signalement, vote, évaluation, quiz ni demande de profil                               | À valider    |
 | Questions de quiz par jour                  | F5.2       | **5** (fixé par le cahier des charges)                                                                                     | Validé       |
 | Jour de référence du quiz                   | F5.2       | Jour calendaire, fuseau **Africa/Douala** (UTC+1)                                                                          | À valider    |
-| Points : signalement validé                 | F5.3       | +10                                                                                                                        | À valider    |
+| Points : signalement validé                 | F5.3       | +10, versés à l'auteur au passage à « Validé » ; conservés si le signalement est contesté ensuite (décision de modération) | À valider    |
 | Points : bonne réponse au quiz              | F5.3       | +2                                                                                                                         | À valider    |
 | Points : évaluation d'un conducteur         | F5.3       | +3                                                                                                                         | À valider    |
 | Classement mensuel                          | F5.4       | Remis à zéro le 1er de chaque mois à 00:00 (Africa/Douala)                                                                 | Validé (CDC) |
@@ -31,6 +37,8 @@ Le cahier des charges fixe les **règles** mais pas toujours les **valeurs**. Le
 | Gravité déclenchant une alerte de proximité | F7.1       | Élevée et Critique                                                                                                         | À valider    |
 | Expiration d'un signalement validé          | —          | Clôture automatique après 7 jours sans « pris en charge » (sauf catégories durables : pont, éclairage, feux)               | À valider    |
 | Nouvelle demande après refus                | F1.3       | Autorisée                                                                                                                  | À valider    |
+
+Les règles d'avis, de visibilité, de quota et de suspension s'appuient sur ces valeurs dans [`report-rules.ts`](../../packages/domain/src/report-rules.ts) ; la zone et les centres des villes pilotes sont dans [`geo.ts`](../../packages/domain/src/geo.ts).
 
 ## Règles fixes (issues du cahier des charges)
 

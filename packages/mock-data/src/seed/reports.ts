@@ -402,8 +402,13 @@ const REPORTS: ReportSpec[] = [
 const HANDLED_REPORTS: Record<string, number> = { 'report-04': 20 };
 const CLOSED_REPORTS: Record<string, number> = { 'report-09': 30, 'report-18': 12 };
 
-/** Statuses for which the author has received the "validated report" points. */
-const REWARDED_STATUSES: readonly ReportStatus[] = ['VALIDATED', 'HANDLED', 'CLOSED'];
+/** Statuses reached after a validation: the author received the "validated report" points. */
+const VALIDATED_ONCE_STATUSES: readonly ReportStatus[] = [
+  'VALIDATED',
+  'HANDLED',
+  'CLOSED',
+  'SUSPICIOUS',
+];
 
 export interface SeedReports {
   reports: Report[];
@@ -441,6 +446,12 @@ export function seedReports(t: Timeline, users: User[]): SeedReports {
 
     const handledHoursAgo = HANDLED_REPORTS[spec.id];
     const closedHoursAgo = CLOSED_REPORTS[spec.id];
+    // Confirmations come first, so the report is validated by the vote reaching the threshold.
+    const threshold = BUSINESS_RULES.reports.validationThreshold;
+    const validatedAt =
+      VALIDATED_ONCE_STATUSES.includes(spec.status) && spec.confirmations >= threshold
+        ? addMinutes(createdAt, step * threshold)
+        : null;
     reports.push({
       id: spec.id,
       clientId: `seed-${spec.id}`,
@@ -457,13 +468,13 @@ export function seedReports(t: Timeline, users: User[]): SeedReports {
       origin: index % 7 === 3 ? 'OFFLINE_SYNCED' : 'ONLINE',
       confirmations: spec.confirmations,
       refutations: spec.refutations,
+      validatedAt,
       handledBy: handledHoursAgo === undefined ? null : DEMO_USER_IDS.authority,
       handledAt: handledHoursAgo === undefined ? null : t.hoursAgo(handledHoursAgo),
       closedAt: closedHoursAgo === undefined ? null : t.hoursAgo(closedHoursAgo),
     });
 
-    if (REWARDED_STATUSES.includes(spec.status)) {
-      const threshold = BUSINESS_RULES.reports.validationThreshold;
+    if (validatedAt) {
       pointEntries.push({
         id: `points-${spec.id}`,
         userId: spec.authorId,
@@ -471,7 +482,7 @@ export function seedReports(t: Timeline, users: User[]): SeedReports {
         points: BUSINESS_RULES.points.REPORT_VALIDATED,
         sourceType: 'REPORT',
         sourceId: spec.id,
-        createdAt: addMinutes(createdAt, step * threshold),
+        createdAt: validatedAt,
       });
     }
 
@@ -499,7 +510,7 @@ export function seedReports(t: Timeline, users: User[]): SeedReports {
     createdAt: t.hoursAgo(24),
     resolvedBy: null,
     resolvedAt: t.hoursAgo(24),
-    decision: 'Suspension automatique de 72 h (F2.6).',
+    decision: 'Suspension automatique de 72 h.',
   });
 
   return { reports, reportValidations, moderationItems, pointEntries };

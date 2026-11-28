@@ -129,6 +129,7 @@ erDiagram
         int refutations "dénormalisé"
         datetime occurred_at
         datetime created_at
+        datetime validated_at "nullable, seuil de validation atteint"
         uuid handled_by FK "nullable, Autorité"
         datetime handled_at "nullable"
         datetime closed_at "nullable"

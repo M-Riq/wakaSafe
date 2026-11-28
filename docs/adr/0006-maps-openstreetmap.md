@@ -18,6 +18,14 @@ La carte est centrale : carte publique (F2.3), vue Autorité et heatmap (F9.5, F
 - L'URL des tuiles et l'attribution OSM sont **configurables** (`EXPO_PUBLIC_MAP_TILE_URL`), pour pouvoir changer de fournisseur en production.
 - Pendant les phases 1 à 10, la version native peut afficher un écran de repli (liste des signalements). Elle est finalisée en phase 11.
 
+## Mise en œuvre (phase 3)
+
+- `src/ui/map/AppMap.web.tsx` (Leaflet) et `src/ui/map/AppMap.tsx`, repli utilisé sur Android tant que MapLibre n'est pas intégré : bandeau « Carte bientôt disponible », les écrans affichent la liste des signalements. `canShowInteractiveMap` indique aux écrans si la carte est interactive.
+- API livrée : `markers`, `center`, `zoom`, `height`, `onMarkerPress`, `onPickLocation` (un toucher sur la carte place le point, à la place de l'appui long prévu). `userLocation` viendra avec MapLibre.
+- Marqueurs vectoriels (`CircleMarker`) colorés selon la gravité : aucune image à charger.
+- L'attribution est configurable (`EXPO_PUBLIC_MAP_ATTRIBUTION`). Le préfixe « Leaflet » reste affiché, sans le drapeau ajouté par défaut depuis Leaflet 1.9.
+- Le regroupement des marqueurs n'est pas encore fait : il demande une dépendance supplémentaire (à valider) et n'est utile qu'avec beaucoup de signalements.
+
 ## Conséquences
 
 - ✅ Aucun coût, aucune clé API dans le dépôt.

@@ -10,7 +10,7 @@ flowchart TD
     B -- Oui --> B1["Afficher la raison<br/>et la date de fin"] --> END1((Fin))
     B -- Non --> C["Récupérer la position GPS<br/>automatiquement"]
     C --> C1{"Position obtenue ?"}
-    C1 -- Non --> C2["Expliquer la permission<br/>et proposer de placer le point sur la carte"]
+    C1 -- Non --> C2["Expliquer la permission,<br/>proposer de choisir la ville<br/>ou de placer le point sur la carte (web)"]
     C2 --> D
     C1 -- Oui --> D["Choisir la catégorie (F2.1)"]
     D --> E["Choisir la gravité<br/>et les personnes concernées"]

@@ -34,9 +34,16 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "WakaSafe utilise vos photos pour votre photo de profil et vos justificatifs.",
-          "cameraPermission": "WakaSafe utilise l’appareil photo pour votre photo de profil et vos justificatifs.",
+          "photosPermission": "WakaSafe utilise vos photos pour votre profil, vos justificatifs et vos signalements.",
+          "cameraPermission": "WakaSafe utilise l’appareil photo pour votre profil, vos justificatifs et vos signalements.",
           "microphonePermission": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "WakaSafe utilise votre position pour placer vos signalements sur la carte.",
+          "isAndroidBackgroundLocationEnabled": false
         }
       ]
     ]

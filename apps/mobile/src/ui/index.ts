@@ -6,6 +6,7 @@ export { BrandLogo } from './BrandLogo';
 export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
 export { Checkbox } from './Checkbox';
+export { Chip } from './Chip';
 export { ChoiceGroup, type Choice } from './ChoiceGroup';
 export { ComingSoonView } from './ComingSoonView';
 export { Icon, type IconName } from './Icon';

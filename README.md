@@ -2,7 +2,7 @@
 
 **Application citoyenne de prévention et de sécurité routière au Cameroun**, portée par l'**Association GOSAFE**.
 
-> Statut : **phase 2 — comptes et profils** (inscription, connexion, réinitialisation, profil, demandes Conducteur et Autorité, justificatifs, contacts de sécurité). Les phases 0 (cadrage et architecture) et 1 (fondations de l'app client) sont terminées.
+> Statut : **phase 3 — signalements et carte** (formulaire de signalement avec position GPS et photo, carte publique filtrable, validation et infirmation par la communauté, signalements suspects, limites d'actions). Les phases 0 (cadrage et architecture), 1 (fondations de l'app client) et 2 (comptes et profils) sont terminées.
 > Avancement détaillé : [ROADMAP.md](ROADMAP.md).
 
 ## Sommaire
@@ -438,6 +438,7 @@ classDiagram
         +ReportOrigin origin
         +number confirmations
         +number refutations
+        +DateTime validatedAt [0..1]
         +string handledBy [0..1]
     }
     class ReportValidation {
@@ -1007,7 +1008,7 @@ flowchart TD
     B -- Oui --> B1["Afficher la raison<br/>et la date de fin"] --> END1((Fin))
     B -- Non --> C["Récupérer la position GPS<br/>automatiquement"]
     C --> C1{"Position obtenue ?"}
-    C1 -- Non --> C2["Expliquer la permission<br/>et proposer de placer le point sur la carte"]
+    C1 -- Non --> C2["Expliquer la permission,<br/>proposer de choisir la ville<br/>ou de placer le point sur la carte (web)"]
     C2 --> D
     C1 -- Oui --> D["Choisir la catégorie (F2.1)"]
     D --> E["Choisir la gravité<br/>et les personnes concernées"]
@@ -1294,6 +1295,7 @@ erDiagram
         int refutations "dénormalisé"
         datetime occurred_at
         datetime created_at
+        datetime validated_at "nullable, seuil de validation atteint"
         uuid handled_by FK "nullable, Autorité"
         datetime handled_at "nullable"
         datetime closed_at "nullable"
@@ -1428,8 +1430,8 @@ Contraintes d'intégrité et points à adapter selon le SGBD (géolocalisation P
 | ----- | ------------------------------------------------------------------------------ | -------------- |
 | 0     | Cadrage, architecture, documentation                                           | ✅ Terminée    |
 | 1     | Fondations : monorepo, packages partagés, app client (Expo), design system, CI | ✅ Terminée    |
-| 2     | M1 Comptes et profils                                                          | 🔵 En revue    |
-| 3     | M2 Signalements et carte                                                       | ⬜             |
+| 2     | M1 Comptes et profils                                                          | ✅ Terminée    |
+| 3     | M2 Signalements et carte                                                       | 🔵 En revue    |
 | 4     | M3 Mode hors ligne                                                             | ⬜             |
 | 5     | M5 Quiz, points, classements                                                   | ⬜             |
 | 6     | M6 Évaluation des conducteurs                                                  | ⬜             |
@@ -1455,7 +1457,7 @@ Détails : [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 10. Application client (`apps/mobile`)
 
-> Disponible : accueil, connexion, inscription (Citoyen, Conducteur ou Autorité), mot de passe oublié, profil (modification, photo, préférences, contacts de sécurité, demande de profil, justificatifs), onglets et espace Conducteur. Les autres écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)). L'app n'affiche aucune information sur les phases ni sur l'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
+> Disponible : accueil, connexion, inscription (Citoyen, Conducteur ou Autorité), mot de passe oublié, profil (modification, photo, préférences, contacts de sécurité, demande de profil, justificatifs), carte publique des signalements et filtres, formulaire « Signaler », « Mes signalements », détail d'un signalement avec « Je confirme » / « C'est faux », onglets et espace Conducteur. Les autres écrans métier arrivent phase par phase ([ROADMAP.md](ROADMAP.md)). L'app n'affiche aucune information sur les phases ni sur l'avancement du projet : une fonctionnalité pas encore livrée est seulement indiquée « Bientôt disponible ».
 
 **Prérequis** : Node.js 24 LTS (fixé dans `.nvmrc` ; Node 26 fonctionne aussi), npm 10 ou plus. Pour Android : un téléphone Android 8+ avec Expo Go, ou un émulateur (Android Studio).
 
@@ -1500,6 +1502,14 @@ Les numéros, noms et agences de démonstration sont **fictifs**. Aucune agence 
 - Les photos (profil et justificatifs) sont compressées puis enregistrées sur l'appareil, avec les autres données de démo.
 - Les conditions d'utilisation affichées sont un texte provisoire, en attendant le texte de GOSAFE.
 - Une demande Conducteur ou Autorité reste « en attente » dans l'app : sa validation se fait dans le back-office (phase 8), qui ne partage pas ses données avec l'app en démo (voir [section 13](#13-déploiement-de-la-démo)).
+
+**Particularités de la démo pour les signalements** :
+
+- La carte interactive (Leaflet, tuiles OpenStreetMap) s'affiche sur le web. Sur Android (Expo Go), la carte affiche « Bientôt disponible » et l'écran montre la liste des signalements : la carte native arrive avec le build Android (phase 11).
+- Le navigateur ou le téléphone demande l'autorisation de localisation. En cas de refus, on choisit la ville (Yaoundé, Douala ou Bafoussam) ou, sur le web, on place le point sur la carte.
+- La zone d'un signalement est la ville pilote la plus proche. Seuls les signalements actifs (en attente, validés, pris en charge) apparaissent sur la carte publique.
+- Pour voir un signalement passer « Validé », se connecter avec la Citoyenne et confirmer le signalement « Éclairage public défectueux » de Bonapriso (Douala), qui a déjà 2 confirmations (seuil : 3). Son auteur gagne 10 points.
+- Les alertes aux usagers proches et la notification de l'auteur arrivent avec le centre de notifications (phase 7) ; la file de modération des suspects, avec le back-office (phase 8).
 
 ## 11. Back-office (`apps/admin`)
 

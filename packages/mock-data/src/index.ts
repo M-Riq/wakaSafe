@@ -14,9 +14,9 @@ import {
   createPointsRepository,
   createQuizRepository,
   createRatingRepository,
-  createReportRepository,
   createStatsRepository,
 } from './repositories/later-phases';
+import { createReportRepository } from './repositories/reports';
 import { createDelay } from './utils';
 
 export { DATABASE_STORAGE_KEY, SESSION_STORAGE_KEY } from './database';
@@ -54,7 +54,7 @@ export function createMockRepositories({
     users: createUserRepository(context),
     profileRequests: createProfileRequestRepository(context),
     agencies: createAgencyRepository(context),
-    reports: createReportRepository(),
+    reports: createReportRepository(context),
     moderation: createModerationRepository(),
     quiz: createQuizRepository(),
     points: createPointsRepository(),

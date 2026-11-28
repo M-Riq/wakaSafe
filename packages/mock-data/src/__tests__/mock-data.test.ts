@@ -2,7 +2,10 @@ import {
   BUSINESS_RULES,
   localDayKey,
   REQUIRED_DOCUMENTS,
+  statusAfterVote,
   type DomainErrorCode,
+  type ReportDraft,
+  type ReportStatus,
 } from '@wakasafe/domain';
 
 import {
@@ -81,6 +84,39 @@ describe('demo seed', () => {
           BUSINESS_RULES.reports.validationThreshold,
         );
       }
+    }
+  });
+
+  it('follows the consensus rules and rewards each validated report once', () => {
+    for (const report of seed.reports) {
+      const votes = seed.reportValidations
+        .filter((v) => v.reportId === report.id)
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      let status: ReportStatus = 'CREATED';
+      let validatedAt: string | null = null;
+      let confirmations = 0;
+      let refutations = 0;
+      for (const vote of votes) {
+        if (vote.verdict === 'CONFIRM') confirmations += 1;
+        else refutations += 1;
+        const since = validatedAt;
+        const refutationsSinceValidation = since
+          ? votes.filter((v) => v.verdict === 'REFUTE' && v.createdAt > since).length
+          : 0;
+        const next = statusAfterVote(status, {
+          confirmations,
+          refutations,
+          refutationsSinceValidation,
+        });
+        if (next === 'VALIDATED' && status !== 'VALIDATED') validatedAt = vote.createdAt;
+        status = next;
+      }
+      // Handling and closing happen after the validation (authority, back-office).
+      const expected = ['HANDLED', 'CLOSED'].includes(report.status) ? 'VALIDATED' : report.status;
+      expect([report.id, status]).toEqual([report.id, expected]);
+      expect(report.validatedAt).toBe(validatedAt);
+      const points = seed.pointEntries.filter((p) => p.sourceId === report.id);
+      expect(points).toHaveLength(validatedAt ? 1 : 0);
     }
   });
 
@@ -190,10 +226,9 @@ describe('mock repositories', () => {
 
   it('flags the operations of later phases as not implemented', async () => {
     const repos = createMockRepositories({ store: createMemoryKeyValueStore(), clock });
-    await expect(repos.reports.list()).rejects.toMatchObject({
-      code: 'NOT_IMPLEMENTED',
-      details: { phase: 3 },
-    });
+    await expect(
+      repos.reports.markHandled({ reportId: 'report-01', authorityId: DEMO_USER_IDS.authority }),
+    ).rejects.toMatchObject({ code: 'NOT_IMPLEMENTED', details: { phase: 9 } });
     await expectCode(repos.quiz.getDailyQuestions(DEMO_USER_IDS.citizen), 'NOT_IMPLEMENTED');
   });
 });
@@ -437,5 +472,179 @@ describe('mock accounts and profiles (M1)', () => {
     await expect(
       repos.profileRequests.uploadDocument(reviewed!.id, { type: 'ID_CARD', fileUrl: 'a.jpg' }),
     ).rejects.toMatchObject({ code: 'CONFLICT', details: { reason: 'PROFILE_REQUEST_CLOSED' } });
+  });
+});
+
+describe('mock reports (M2)', () => {
+  const MINUTE_MS = 60 * 1000;
+  let clientSequence = 0;
+
+  function draft(overrides: Partial<ReportDraft> = {}): ReportDraft {
+    clientSequence += 1;
+    return {
+      clientId: `test-${clientSequence}`,
+      category: 'DANGEROUS_POTHOLE',
+      severity: 'HIGH',
+      affectedGroup: 'MOTORCYCLISTS',
+      location: { latitude: 4.05, longitude: 9.7, accuracyMeters: 12 },
+      // Recomputed from the position by the repository.
+      city: 'Yaoundé',
+      photoUrl: null,
+      occurredAt: NOW.toISOString(),
+      ...overrides,
+    };
+  }
+
+  function setup() {
+    let now = NOW;
+    const repos = createMockRepositories({
+      store: createMemoryKeyValueStore(),
+      clock: { now: () => now },
+    });
+    const advance = (minutes: number) => {
+      now = new Date(now.getTime() + minutes * MINUTE_MS);
+    };
+    return { repos, advance };
+  }
+
+  it('lists reports with the map filters, most recent first', async () => {
+    const { repos } = setup();
+    const visible = await repos.reports.list({
+      statuses: ['CREATED', 'VALIDATED', 'HANDLED'],
+      city: 'Douala',
+      severities: ['HIGH', 'CRITICAL'],
+    });
+    expect(visible.length).toBeGreaterThan(0);
+    for (const report of visible) {
+      expect(report.city).toBe('Douala');
+      expect(['HIGH', 'CRITICAL']).toContain(report.severity);
+    }
+    const dates = visible.map((r) => r.createdAt);
+    expect(dates).toEqual([...dates].sort().reverse());
+
+    const mine = await repos.reports.list({ authorId: DEMO_USER_IDS.citizen });
+    expect(mine.map((r) => r.id)).toEqual(['report-08', 'report-01', 'report-04']);
+  });
+
+  it('creates a report in the zone of the nearest city, once per client id', async () => {
+    const { repos } = setup();
+    const input = { authorId: DEMO_USER_IDS.citizen, draft: draft(), origin: 'ONLINE' as const };
+    const before = await repos.reports.getActionQuota(DEMO_USER_IDS.citizen);
+
+    const report = await repos.reports.create(input);
+    expect(report).toMatchObject({ city: 'Douala', status: 'CREATED', confirmations: 0 });
+    expect(await repos.reports.create(input)).toEqual(report);
+    expect(await repos.reports.getById(report.id)).toEqual(report);
+    expect((await repos.reports.getActionQuota(DEMO_USER_IDS.citizen)).reportsRemaining).toBe(
+      before.reportsRemaining - 1,
+    );
+    await expectCode(
+      repos.reports.create({ ...input, draft: { ...draft(), category: 'UNKNOWN' as never } }),
+      'VALIDATION_FAILED',
+    );
+  });
+
+  it('validates a report at the third confirmation and credits its author', async () => {
+    const { repos } = setup();
+    const citizen = DEMO_USER_IDS.citizen;
+
+    const report = await repos.reports.vote({
+      reportId: 'report-16',
+      userId: citizen,
+      verdict: 'CONFIRM',
+    });
+    expect(report).toMatchObject({
+      status: 'VALIDATED',
+      confirmations: 3,
+      validatedAt: NOW.toISOString(),
+    });
+    expect(await repos.reports.getUserVote('report-16', citizen)).toBe('CONFIRM');
+    expect(await repos.reports.getUserVote('report-03', citizen)).toBeNull();
+
+    await expectCode(
+      repos.reports.vote({ reportId: 'report-16', userId: citizen, verdict: 'REFUTE' }),
+      'ALREADY_VOTED',
+    );
+    await expect(
+      repos.reports.vote({ reportId: 'report-08', userId: citizen, verdict: 'CONFIRM' }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN', details: { reason: 'OWN_REPORT' } });
+    await expect(
+      repos.reports.vote({ reportId: 'report-09', userId: citizen, verdict: 'CONFIRM' }),
+    ).rejects.toMatchObject({ code: 'CONFLICT', details: { reason: 'REPORT_CLOSED_TO_VOTES' } });
+    await expectCode(
+      repos.reports.vote({
+        reportId: 'report-03',
+        userId: DEMO_USER_IDS.suspended,
+        verdict: 'CONFIRM',
+      }),
+      'ACCOUNT_SUSPENDED',
+    );
+  });
+
+  it('sends a validated report contested by 3 refutations to moderation', async () => {
+    const { repos } = setup();
+    // report-14 was validated, then refuted twice.
+    const seed = createSeed(NOW);
+    const voted = new Set(
+      seed.reportValidations.filter((v) => v.reportId === 'report-14').map((v) => v.userId),
+    );
+    const voter = seed.users.find(
+      (u) => u.status === 'ACTIVE' && u.role !== 'ADMIN' && u.id !== 'user-102' && !voted.has(u.id),
+    )!;
+    const report = await repos.reports.vote({
+      reportId: 'report-14',
+      userId: voter.id,
+      verdict: 'REFUTE',
+    });
+    expect(report.status).toBe('SUSPICIOUS');
+    const visible = await repos.reports.list({ statuses: ['CREATED', 'VALIDATED', 'HANDLED'] });
+    expect(visible.some((r) => r.id === 'report-14')).toBe(false);
+  });
+
+  it('limits the reports per 24 h and tells when the next one is possible', async () => {
+    const { repos, advance } = setup();
+    const citizen = DEMO_USER_IDS.citizen;
+    const { reportsRemaining } = await repos.reports.getActionQuota(citizen);
+    expect(reportsRemaining).toBe(BUSINESS_RULES.reports.reportQuotaPer24h - 2);
+
+    for (let i = 0; i < reportsRemaining; i += 1) {
+      advance(11);
+      await repos.reports.create({ authorId: citizen, draft: draft(), origin: 'ONLINE' });
+    }
+    advance(11);
+    await expect(
+      repos.reports.create({ authorId: citizen, draft: draft(), origin: 'ONLINE' }),
+    ).rejects.toMatchObject({
+      code: 'QUOTA_EXCEEDED',
+      details: { reason: 'REPORT_QUOTA_REACHED' },
+    });
+    const quota = await repos.reports.getActionQuota(citizen);
+    expect(quota.reportsRemaining).toBe(0);
+    expect(quota.reportsAvailableAt).not.toBeNull();
+  });
+
+  it('flags abnormally frequent reports and suspends the author after 3 alerts', async () => {
+    const { repos } = setup();
+    const citizen = DEMO_USER_IDS.citizen;
+    const statuses: ReportStatus[] = [];
+    for (let i = 0; i < 8; i += 1) {
+      const report = await repos.reports.create({
+        authorId: citizen,
+        draft: draft(),
+        origin: 'ONLINE',
+      });
+      statuses.push(report.status);
+    }
+    expect(statuses).toEqual([
+      ...Array<ReportStatus>(5).fill('CREATED'),
+      ...Array<ReportStatus>(3).fill('SUSPICIOUS'),
+    ]);
+    const user = await repos.users.getById(citizen);
+    expect(user.status).toBe('SUSPENDED');
+    expect(user.suspendedUntil).toBe('2026-05-13T10:00:00.000Z');
+    await expectCode(
+      repos.reports.create({ authorId: citizen, draft: draft(), origin: 'ONLINE' }),
+      'ACCOUNT_SUSPENDED',
+    );
   });
 });

@@ -1,3 +1,5 @@
+export { FormError } from './components/FormError';
+export { ImageInput } from './components/ImageInput';
 export {
   accountKeys,
   useAgencies,

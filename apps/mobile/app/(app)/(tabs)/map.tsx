@@ -1,6 +1,3 @@
-import { fr } from '@/lib/i18n';
-import { ComingSoonView } from '@/ui';
+import { MapScreen } from '@/features/reports';
 
-export default function MapTab() {
-  return <ComingSoonView testID="coming-soon-map" icon="map-outline" {...fr.comingSoon.map} />;
-}
+export default MapScreen;

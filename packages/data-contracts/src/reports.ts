@@ -31,16 +31,19 @@ export interface ReportFilters {
   createdAfter?: IsoDateTime;
 }
 
-/** F2.6 periodic action limits. */
+/** F2.6 periodic action limits, counted over a rolling 24 h window. */
 export interface ActionQuota {
   reportsRemaining: number;
   votesRemaining: number;
-  /** When the oldest counted action leaves the rolling window. */
-  nextResetAt: IsoDateTime | null;
+  /** When a new report becomes possible again; null while some remain. */
+  reportsAvailableAt: IsoDateTime | null;
+  /** When a new vote becomes possible again; null while some remain. */
+  votesAvailableAt: IsoDateTime | null;
 }
 
 export interface CreateReportInput {
   authorId: Id;
+  /** `draft.city` is recomputed from the position (nearest pilot city, F2.3 zone). */
   draft: ReportDraft;
   /** OFFLINE_SYNCED when replayed from the local queue (M3). Idempotent on `draft.clientId`. */
   origin: ReportOrigin;
@@ -55,6 +58,7 @@ export interface VoteInput {
 export interface ReportRepository {
   getActionQuota(userId: Id): Promise<ActionQuota>;
   create(input: CreateReportInput): Promise<Report>;
+  /** Most recent first. Without `statuses`, every status is returned. */
   list(filters?: ReportFilters): Promise<Report[]>;
   getById(reportId: Id): Promise<Report>;
   getUserVote(reportId: Id, userId: Id): Promise<Verdict | null>;

@@ -4,7 +4,6 @@ import type {
   PointsRepository,
   QuizRepository,
   RatingRepository,
-  ReportRepository,
   StatsRepository,
 } from '@wakasafe/data-contracts';
 
@@ -12,19 +11,6 @@ import { notImplemented as todo } from '../utils';
 
 // Repositories delivered in later phases. The seed already contains their data, so the
 // implementations only have to read and update it. Each call rejects with NOT_IMPLEMENTED.
-
-export function createReportRepository(): ReportRepository {
-  return {
-    getActionQuota: () => todo('reports.getActionQuota', 3),
-    create: () => todo('reports.create', 3),
-    list: () => todo('reports.list', 3),
-    getById: () => todo('reports.getById', 3),
-    getUserVote: () => todo('reports.getUserVote', 3),
-    vote: () => todo('reports.vote', 3),
-    markHandled: () => todo('reports.markHandled', 9),
-    close: () => todo('reports.close', 8),
-  };
-}
 
 export function createModerationRepository(): ModerationRepository {
   return {

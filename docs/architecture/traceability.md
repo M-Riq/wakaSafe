@@ -11,12 +11,12 @@ Légende des statuts : ⬜ à faire · 🟡 en cours · ✅ fait · ⏸️ optio
 | F1.3      | Citoyen actif immédiatement, Conducteur/Autorité en attente + notification             | client                         | 2 (+7) | `ProfileRequestRepository`, `NotificationRepository` | 🟡     |
 | F1.4      | Téléversement des justificatifs                                                        | client                         | 2      | `ProfileRequestRepository`                           | ✅     |
 | F1.5      | Profil, préférences, contacts de sécurité                                              | client                         | 2      | `UserRepository`                                     | ✅     |
-| F2.1      | 10 catégories de signalement                                                           | client                         | 3      | `domain` (`ReportCategory`)                          | ⬜     |
-| F2.2      | Contenu d'un signalement (GPS auto, photo optionnelle…)                                | client                         | 3      | `ReportRepository`                                   | ⬜     |
-| F2.3      | Carte publique, filtres type/gravité/zone                                              | client                         | 3      | `ReportRepository.list`                              | ⬜     |
-| F2.4      | Validation / infirmation communautaire                                                 | client                         | 3      | `ReportRepository.vote`                              | ⬜     |
-| F2.5      | Suspects → file de modération                                                          | client (données), admin (file) | 3, 8   | `ModerationRepository`                               | ⬜     |
-| F2.6      | Limites d'actions, suspension temporaire                                               | client                         | 3      | `ReportRepository.getActionQuota`                    | ⬜     |
+| F2.1      | 10 catégories de signalement                                                           | client                         | 3      | `domain` (`ReportCategory`)                          | ✅     |
+| F2.2      | Contenu d'un signalement (GPS auto, photo optionnelle…)                                | client                         | 3      | `ReportRepository`                                   | ✅     |
+| F2.3      | Carte publique, filtres type/gravité/zone                                              | client                         | 3, 11  | `ReportRepository.list`                              | 🟡     |
+| F2.4      | Validation / infirmation communautaire                                                 | client                         | 3      | `ReportRepository.vote`                              | ✅     |
+| F2.5      | Suspects → file de modération                                                          | client (données), admin (file) | 3, 8   | `ModerationRepository`                               | 🟡     |
+| F2.6      | Limites d'actions, suspension temporaire                                               | client                         | 3      | `ReportRepository.getActionQuota`                    | ✅     |
 | F3.1      | Enregistrement local + icône « hors ligne »                                            | client                         | 4      | `StorageService`                                     | ⬜     |
 | F3.2      | Confirmation avant synchronisation                                                     | client                         | 4      | `SyncService`, `ReportRepository.create`             | ⬜     |
 | F4.1–F4.5 | Partage de trajet sécurisé                                                             | client + page publique         | 10     | à définir                                            | ⏸️     |
@@ -71,3 +71,18 @@ Côté client, avec les données mock. La validation des demandes se fait dans l
 | F1.5     | Modification du profil et de la photo (téléphone non modifiable), préférences de notification et rayon d'alerte, jusqu'à 5 contacts de sécurité                                          | `account-flows.test.tsx` (profile management), `mock-data.test.ts`                                   |
 
 F1.3 reste **en cours** : la notification de la décision arrive en phase 7 (centre de notifications), et la décision elle-même en phase 8 (back-office).
+
+## Couverture de la phase 3 (M2 signalements et carte)
+
+Côté client, avec les données mock. La file de modération est traitée dans le back-office (phase 8).
+
+| Exigence | Livré                                                                                                                                                                                                     | Tests                                                                                      |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| F2.1     | Formulaire « Signaler » : les 10 catégories, avec icône                                                                                                                                                   | `report-flows.test.tsx` (report form)                                                      |
+| F2.2     | Gravité, personnes concernées, date et heure automatiques, photo facultative compressée, position GPS automatique ; si elle est refusée : choix de la ville ou point placé sur la carte (web)             | `report-flows.test.tsx` (report form), `mock-data.test.ts` (mock reports)                  |
+| F2.3     | Carte Leaflet et tuiles OSM sur le web, marqueurs colorés selon la gravité, liste des signalements, filtres type, gravité et zone ; seuls les signalements actifs sont publics. Carte Android en phase 11 | `report-flows.test.tsx` (public map), `domain.test.ts` (report rules), `mock-data.test.ts` |
+| F2.4     | Détail d'un signalement, « Je confirme » / « C'est faux » ; un avis par personne, pas sur son propre signalement ; validation à 3 confirmations (+10 points à l'auteur), infirmation                      | `report-flows.test.tsx` (community votes), `domain.test.ts`, `mock-data.test.ts`           |
+| F2.5     | Passage en « Suspect » (fréquence anormale, contestation après validation) et ajout à la file de modération ; un signalement suspect n'est visible que par son auteur                                     | `mock-data.test.ts` (mock reports), `report-flows.test.tsx`                                |
+| F2.6     | Quotas sur 24 h glissantes (10 signalements, 30 avis) avec la date du prochain essai ; 3 alertes d'abus en 7 jours → suspension automatique de 72 h et passage en lecture seule                           | `domain.test.ts` (report rules), `mock-data.test.ts`, `report-flows.test.tsx` (suspended)  |
+
+F2.3 reste **en cours** : sur Android, la liste remplace la carte jusqu'à l'intégration de MapLibre (phase 11). F2.5 reste **en cours** : la file de modération est traitée dans le back-office (phase 8).

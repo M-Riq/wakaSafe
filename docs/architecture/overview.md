@@ -23,11 +23,11 @@ wakasafe/
 │   │   ├── vercel.json            # hébergement de la démo web (ADR-0008)
 │   │   └── src/
 │   │       ├── data/              # composition root (seul import de mock-data)
-│   │       ├── features/          # accounts, ratings (phase 1) ;
-│   │       │                      # reports, offline, quiz, points, notifications (phases 3 à 7)
-│   │       ├── services/          # storage (phase 1), media (phase 2) ; location,
-│   │       │                      # network, notification, sync (phases 3 à 7)
-│   │       ├── ui/                # design system RN ; AppMap .web / .native (phase 3)
+│   │       ├── features/          # accounts, ratings (phase 1), reports (phase 3) ;
+│   │       │                      # offline, quiz, points, notifications (phases 4 à 7)
+│   │       ├── services/          # storage (phase 1), media (phase 2), location (phase 3) ;
+│   │       │                      # network, notification, sync (phases 4 à 7)
+│   │       ├── ui/                # design system RN ; map/ : AppMap web (Leaflet) et repli natif (phase 3)
 │   │       └── lib/               # i18n fr, config, erreurs, client de requêtes
 │   └── admin/                     # Next.js App Router — web
 │       └── src/
@@ -54,8 +54,9 @@ wakasafe/
 ```text
 features/reports/
 ├── components/      # composants propres à la feature
-├── hooks/           # useReports, useCreateReport (TanStack Query + useRepositories)
+├── hooks/           # useReportList, useCreateReport, useVote (TanStack Query + useRepositories)
 ├── screens/         # écrans montés par les routes de app/
+├── filters.ts       # logique pure propre à la feature (filtres, présentation…)
 ├── store.ts         # état local Zustand si nécessaire
 ├── index.ts         # API publique de la feature
 └── __tests__/
@@ -84,7 +85,8 @@ Modèle : [`.env.example`](../../.env.example), à copier dans `apps/mobile/.env
 | Variable                      | App    | Valeur par défaut | Rôle                                                       |
 | ----------------------------- | ------ | ----------------- | ---------------------------------------------------------- |
 | `EXPO_PUBLIC_DATA_SOURCE`     | mobile | `mock`            | Choix de l'implémentation des dépôts                       |
-| `EXPO_PUBLIC_MAP_TILE_URL`    | mobile | tuiles OSM        | Fournisseur de tuiles (utilisé à partir de la phase 3)     |
+| `EXPO_PUBLIC_MAP_TILE_URL`    | mobile | tuiles OSM        | Fournisseur de tuiles de la carte web                      |
+| `EXPO_PUBLIC_MAP_ATTRIBUTION` | mobile | crédit OSM        | Crédit affiché sur la carte (à changer avec les tuiles)    |
 | `EXPO_PUBLIC_MOCK_LATENCY_MS` | mobile | `300`             | Latence réseau simulée par les mocks, en ms (`0` : aucune) |
 | `NEXT_PUBLIC_DATA_SOURCE`     | admin  | `mock`            | Choix de l'implémentation des dépôts (phase 8)             |
 | `NEXT_PUBLIC_MAP_TILE_URL`    | admin  | tuiles OSM        | Fournisseur de tuiles (phase 9)                            |

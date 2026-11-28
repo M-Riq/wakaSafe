@@ -24,7 +24,7 @@ import {
 } from '@wakasafe/domain';
 
 /** Bumped on every incompatible change: an older stored demo is replaced by a fresh seed. */
-export const MOCK_DATABASE_VERSION = 2;
+export const MOCK_DATABASE_VERSION = 3;
 
 export const CredentialSchema = z.object({
   userId: IdSchema,

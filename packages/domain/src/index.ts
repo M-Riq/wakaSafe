@@ -9,6 +9,8 @@ export * from './entities/notifications';
 export * from './inputs/accounts';
 export * from './config/business-rules';
 export * from './capabilities';
+export * from './geo';
+export * from './report-rules';
 export * from './errors';
 export * from './phone';
 export * from './time';

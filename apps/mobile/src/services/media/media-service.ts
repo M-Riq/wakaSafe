@@ -3,8 +3,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Platform } from 'react-native';
 
 export type ImageSource = 'camera' | 'library';
-/** Profile photo (F1.1) or supporting document (F1.4). */
-export type ImagePurpose = 'avatar' | 'document';
+/** Profile photo (F1.1), supporting document (F1.4) or report photo (F2.2). */
+export type ImagePurpose = 'avatar' | 'document' | 'report';
 
 export type PickImageResult =
   { status: 'picked'; dataUri: string } | { status: 'cancelled' } | { status: 'denied' };
@@ -13,7 +13,7 @@ export type PickImageResult =
  * Longest side kept after compression. Images are stored locally as data URIs until the
  * real backend arrives, so they must stay small (about 50 to 200 KB).
  */
-const MAX_SIDE: Record<ImagePurpose, number> = { avatar: 512, document: 1280 };
+const MAX_SIDE: Record<ImagePurpose, number> = { avatar: 512, document: 1280, report: 1024 };
 const JPEG_QUALITY = 0.6;
 
 /**

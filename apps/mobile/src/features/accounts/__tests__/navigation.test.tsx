@@ -16,7 +16,7 @@ async function renderApp(initialUrl = '/') {
 async function signInAs(userId: string) {
   await renderApp('/demo-access');
   await fireEvent.press(await screen.findByTestId(`demo-sign-in-${userId}`));
-  await screen.findByTestId('coming-soon-map');
+  await screen.findByTestId('map-screen');
 }
 
 async function openProfile() {
@@ -52,7 +52,7 @@ describe('client navigation and role guards', () => {
     const { repositories, demo } = createAppData();
     await repositories.auth.login('+237600000001', demo!.password);
     await renderApp();
-    expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
+    expect(await screen.findByTestId('map-screen')).toBeOnTheScreen();
   });
 
   it('never restores an administrator session in the client app', async () => {
@@ -74,7 +74,7 @@ describe('client navigation and role guards', () => {
     const { repositories, demo } = createAppData();
     await repositories.auth.login('+237600000003', demo!.password);
     await renderApp('/driver');
-    expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
+    expect(await screen.findByTestId('map-screen')).toBeOnTheScreen();
     expect(screen.queryByTestId('driver-area')).toBeNull();
   });
 
@@ -92,7 +92,7 @@ describe('client navigation and role guards', () => {
     await renderApp('/driver');
     expect(await screen.findByTestId('driver-area')).toBeOnTheScreen();
     await testRouter.back('/map');
-    expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
+    expect(await screen.findByTestId('map-screen')).toBeOnTheScreen();
   });
 
   it('no longer exposes a project progress page', async () => {
@@ -102,6 +102,9 @@ describe('client navigation and role guards', () => {
 
   it('shows placeholders without any roadmap detail', async () => {
     await signInAs('user-citizen');
+    expect(screen.queryByText(/phase/i)).toBeNull();
+    await testRouter.navigate('/quiz');
+    expect(await screen.findByTestId('coming-soon-quiz')).toBeOnTheScreen();
     expect(screen.getByText(fr.common.comingSoon)).toBeOnTheScreen();
     expect(screen.queryByText(/phase/i)).toBeNull();
   });

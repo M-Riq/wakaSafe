@@ -75,6 +75,8 @@ export const ReportSchema = ReportDraftSchema.extend({
   origin: ReportOriginSchema,
   confirmations: z.number().int().nonnegative(),
   refutations: z.number().int().nonnegative(),
+  /** When the report reached the validation threshold; refutations after it may make it suspicious (F2.5). */
+  validatedAt: IsoDateTimeSchema.nullable(),
   handledBy: IdSchema.nullable(),
   handledAt: IsoDateTimeSchema.nullable(),
   closedAt: IsoDateTimeSchema.nullable(),

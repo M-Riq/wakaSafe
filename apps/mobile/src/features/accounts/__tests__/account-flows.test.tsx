@@ -65,7 +65,7 @@ describe('sign-in (F1.2)', () => {
     await type('login-phone', '6 00 00 00 01');
     await type('login-password', 'demo-wakasafe');
     await press('login-submit');
-    expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
+    expect(await screen.findByTestId('map-screen')).toBeOnTheScreen();
   });
 
   it('flags empty fields before calling the repository', async () => {
@@ -98,7 +98,7 @@ describe('registration (F1.1, F1.3, F1.4)', () => {
     await fillIdentity();
     await screen.findByTestId('register-profile');
     await press('register-submit');
-    expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
+    expect(await screen.findByTestId('map-screen')).toBeOnTheScreen();
     await testRouter.navigate('/profile');
     expect(await screen.findByText('Awa Bello')).toBeOnTheScreen();
     expect(screen.getByTestId('profile-request-card')).toBeOnTheScreen();
@@ -179,7 +179,7 @@ describe('password reset (F1.2)', () => {
     await type('reset-new-password', NEW_PASSWORD);
     await type('reset-confirm-password', NEW_PASSWORD);
     await press('reset-submit');
-    expect(await screen.findByTestId('coming-soon-map')).toBeOnTheScreen();
+    expect(await screen.findByTestId('map-screen')).toBeOnTheScreen();
 
     const { repositories } = createAppData();
     await expect(repositories.auth.login('+237600000001', NEW_PASSWORD)).resolves.toBeTruthy();

@@ -29,6 +29,8 @@ function SignedInNavigator() {
       <Stack.Screen name="profile/safety-contacts" options={{ title: fr.safetyContacts.title }} />
       <Stack.Screen name="profile/request" options={{ title: fr.profileRequest.title }} />
       <Stack.Screen name="profile/documents" options={{ title: fr.documents.title }} />
+      <Stack.Screen name="reports/mine" options={{ title: fr.myReports.title }} />
+      <Stack.Screen name="reports/[id]" options={{ title: fr.reportDetail.title }} />
       <Stack.Protected guard={canAccessDriverArea}>
         <Stack.Screen name="driver" options={{ title: fr.driver.title }} />
       </Stack.Protected>

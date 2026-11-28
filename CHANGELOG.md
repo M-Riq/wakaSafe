@@ -5,6 +5,32 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Le 
 
 ## [Non publié]
 
+### Phase 3 : signalements et carte (M2)
+
+#### Ajouté
+
+- `@wakasafe/domain` :
+  - règles des signalements (`report-rules.ts`) : statuts visibles sur la carte publique et ouverts aux avis, statut après un avis (validation, infirmation, contestation après validation), fréquence anormale, quotas sur 24 h glissantes, suspension automatique ;
+  - ville pilote la plus proche d'une position (`geo.ts`) ;
+  - date de validation d'un signalement (`validatedAt`) et erreurs `REPORT_QUOTA_REACHED`, `VOTE_QUOTA_REACHED`, `OWN_REPORT`, `REPORT_CLOSED_TO_VOTES`.
+- `@wakasafe/mock-data` : dépôt des signalements complet (création, liste filtrée, détail, avis, quotas). Un signalement envoyé en fréquence anormale passe « Suspect » et rejoint la file de modération ; 3 alertes d'abus en 7 jours suspendent le compte 72 h ; un signalement validé rapporte 10 points à son auteur. Jeux de démonstration complétés (dates de validation, points). Schéma de stockage local en version 3.
+- `apps/mobile` :
+  - carte publique : carte Leaflet avec les tuiles OpenStreetMap sur le web, marqueurs colorés selon la gravité, liste des signalements, filtres par type, gravité et zone ;
+  - formulaire « Signaler » : catégorie, gravité, personnes concernées, photo facultative compressée, position GPS automatique ; en cas de refus, choix de la ville ou point placé sur la carte (web) ; quota restant, compte suspendu en lecture seule, écran de confirmation ;
+  - « Mes signalements » et détail d'un signalement avec « Je confirme » / « C'est faux » ;
+  - composant `AppMap` (Leaflet sur le web, repli « Bientôt disponible » sur Android en attendant MapLibre), `LocationService` (`expo-location`), composant `Chip` ;
+  - tests des parcours : carte et filtres, formulaire (position, photo, refus de localisation), mes signalements, avis, signalement non public, compte suspendu.
+- Dépendances : `leaflet`, `react-leaflet`, `@types/leaflet`, `expo-location`.
+- Variable `EXPO_PUBLIC_MAP_ATTRIBUTION` (crédit affiché sur la carte).
+
+#### Modifié
+
+- `ActionQuota` : `reportsAvailableAt` et `votesAvailableAt` remplacent `nextResetAt`.
+- Les onglets « Carte » et « Signaler » ne sont plus « Bientôt disponible ». Textes des permissions (photos, appareil photo, localisation).
+- Règles métier : dépassement de quota, alerte d'abus, avis, visibilité, zone, position sans GPS, points d'un signalement validé.
+- Diagrammes : `validated_at` dans le modèle de données, `validatedAt` dans les classes du domaine, choix de la ville dans l'activité « Signaler un danger ».
+- ADR-0006 : mise en œuvre de la carte web et du repli Android.
+
 ### Phase 2 : comptes et profils (M1)
 
 #### Ajouté
